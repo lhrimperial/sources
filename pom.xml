@@ -9,6 +9,8 @@
   <version>1.0-SNAPSHOT</version>
   <modules>
     <module>source-tomcat</module>
+    <module>source-sboot</module>
+      <module>source-network</module>
   </modules>
   <packaging>pom</packaging>
 

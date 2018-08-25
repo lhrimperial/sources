@@ -12,11 +12,7 @@
     <groupId>com.github.sources</groupId>
     <artifactId>source-tomcat</artifactId>
 	<version>8.5.23</version>
-
     <name>source-tomcat</name>
- 
-    
- 
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
