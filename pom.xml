@@ -11,6 +11,7 @@
     <module>source-tomcat</module>
     <module>source-sboot</module>
       <module>source-network</module>
+      <module>source-algorithm</module>
   </modules>
   <packaging>pom</packaging>
 
