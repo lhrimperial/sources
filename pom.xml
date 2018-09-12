@@ -12,6 +12,7 @@
     <module>source-sboot</module>
       <module>source-network</module>
       <module>source-algorithm</module>
+      <module>source-jdk</module>
   </modules>
   <packaging>pom</packaging>
 
