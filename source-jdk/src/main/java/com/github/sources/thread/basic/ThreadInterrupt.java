@@ -11,6 +11,10 @@ public class ThreadInterrupt {
         dealInterruptException();
     }
 
+    /**
+     * 中断异常处理
+     * @throws Exception
+     */
     public static void dealInterruptException () throws Exception {
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -38,6 +42,10 @@ public class ThreadInterrupt {
         thread.interrupt();
     }
 
+    /**
+     * 处理中断
+     * @throws Exception
+     */
     public static void dealInterrupt() throws  Exception {
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -57,6 +65,10 @@ public class ThreadInterrupt {
         thread.interrupt();
     }
 
+    /**
+     * 没有处理中断
+     * @throws Exception
+     */
     public static void noDealInterrupt() throws Exception{
         Thread thread = new Thread(new Runnable() {
             @Override

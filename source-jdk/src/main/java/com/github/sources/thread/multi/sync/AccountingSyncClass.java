@@ -10,6 +10,9 @@ public class AccountingSyncClass implements Runnable{
     private static int i = 0;
 
     public static void main(String[] args) throws Exception{
+        /**
+         * 静态方法中锁定的是Class对象，这里既是使用的是不同的对象，也能达到锁定的目的
+         */
         Thread thread1 = new Thread(new AccountingSyncClass());
         Thread thread2 = new Thread(new AccountingSyncClass());
         thread1.start();

@@ -9,6 +9,9 @@ public class AccountingSyncBlock implements Runnable{
     private static Object obj = new Object();
 
     public static void main(String[] args) throws Exception{
+        /**
+         * 锁定对象中，锁必须是同一个对象，这里要注意错误加锁的现象
+         */
         Thread thread1 = new Thread(new AccountingSyncBlock());
         Thread thread2 = new Thread(new AccountingSyncBlock());
         thread1.start();

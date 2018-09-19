@@ -9,6 +9,9 @@ public class AccountingSyncInstance implements Runnable {
 
     public static void main(String[] args) throws Exception{
         AccountingSyncInstance instance = new AccountingSyncInstance();
+        /**
+         * 如果多线程间使用的不是同一个对象，即没有达到锁定的效果
+         */
         Thread thread1 = new Thread(instance);
         Thread thread2 = new Thread(instance);
         thread1.start();
