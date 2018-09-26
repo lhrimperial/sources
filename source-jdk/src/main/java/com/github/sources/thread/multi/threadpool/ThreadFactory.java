@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 public class ThreadFactory {
 
     public static void main(String[] args){
-        ExecutorService executor = new ThreadPoolExecutor(5, 5, 0L, TimeUnit.SECONDS,
+        ExecutorService executor = null;/*new ThreadPoolExecutor(5, 5, 0L, TimeUnit.SECONDS,
                 new LinkedBlockingDeque<>(), new java.util.concurrent.ThreadFactory() {
             @Override
             public Thread newThread(Runnable r) {
@@ -19,7 +19,7 @@ public class ThreadFactory {
                 System.out.println("ThreadFactory create a thread : " + thread);
                 return thread;
             }
-        });
+        });*/
 
         for (int i = 0; i < 15; i++) {
             executor.submit(new MyTask());
