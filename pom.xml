@@ -14,6 +14,7 @@
       <module>source-algorithm</module>
       <module>source-jdk</module>
       <module>source-dubbo</module>
+      <module>source-rocketmq</module>
   </modules>
   <packaging>pom</packaging>
 
