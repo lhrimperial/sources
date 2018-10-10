@@ -15,6 +15,8 @@
       <module>source-jdk</module>
       <module>source-dubbo</module>
       <module>source-rocketmq</module>
+      <module>source-scloud</module>
+      <module>source-distributed</module>
   </modules>
   <packaging>pom</packaging>
 
