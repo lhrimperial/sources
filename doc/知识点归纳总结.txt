@@ -58,6 +58,7 @@
     synchronized加锁，每个对象都有一个monitor对象与之关联，monitor中有两个队列，一个同步队列一个等待队列，当多个线程同时访问一段代码时，没有获取到锁的线程会进入到同步队列，
     当线程调用了wait方法时，会释放调锁，然后进入等待队列，
     JVM对synchronized的优化：偏向锁、轻量级锁、自旋锁、锁消除
-    11.JUC并发包：ReentrantLock
+    11.JUC并发包：ReentrantLock、Condition、Semaphore、CountDownLatch 、CyclicBarrier、LockSupport 、UnSafe
+    12.CAS（比较交换）和AQS（队列同步器）：
 
 
