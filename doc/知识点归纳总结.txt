@@ -26,7 +26,7 @@
     2.Netty服务启动之前调用group、channel，handler、option、attr、childHandler、childOption、childAttr设置启动参数
     3.Netty通过编写多个ChannelHandler 来处理不同的功能，通过ChannelPipeline来保证ChannelHandler的处理顺序。每个Channel创建的时候都会关联一个ChannelPipeline，
     ChannelHandler通过封装成ChannelHandlerContext链表结构添加到ChannelPipeline中以此来保证ChannelHandler的执行顺序。
-    4.调用顺序：先是调用ChannelPipeline中的fire***方法，接着是ChannelHandlerContext中的fire***方法，最后是ChannelHandler中的***方法
+    4.调用顺序：先是调用ChannelPipeline中的fireXXX方法，接着是ChannelHandlerContext中的fireXXX方法，最后是ChannelHandler中的XXX方法
 
 四、Tomcat
     1.Tomcat的最顶层是一个Server，代表着整个服务，控制着整个tomcat的生命周期，一个Server包含至少一个Service，用于提供具体的服务。
@@ -58,7 +58,70 @@
     synchronized加锁，每个对象都有一个monitor对象与之关联，monitor中有两个队列，一个同步队列一个等待队列，当多个线程同时访问一段代码时，没有获取到锁的线程会进入到同步队列，
     当线程调用了wait方法时，会释放调锁，然后进入等待队列，
     JVM对synchronized的优化：偏向锁、轻量级锁、自旋锁、锁消除
-    11.JUC并发包：ReentrantLock、Condition、Semaphore、CountDownLatch 、CyclicBarrier、LockSupport 、UnSafe
-    12.CAS（比较交换）和AQS（队列同步器）：
+    11.UnSafe（指针类）、CAS（比较交换）和AQS（队列同步器）：
+        - UnSafe：allocateMemory、reallocateMemory、freeMemory用于分配内存、扩展内存、释放内存，UnSafe可以定位对象属性的内存位置
+        - CAS：依托于UnSafe类，通过比较预期值域内存位置上的值，相等则设置为新值，否则不操作；Atomic系列就是基于CAS保证操作的原子性，
+            循环读取值与内存位置上的值比较，直到相等然后设置新值
+        - AQS：用于构建锁或其他同步组件的基础框架，通过一个volatile int state控制同步状态，当state=0时表示没有任何线程占用共享资源，
+            当state>0表示当前有线程占用共享资源，其他线程需要进入同步队列进行等待。AQS中通过内部类Node构建一个双向队列实现FIFO的同步队列
+            完成线程获取锁的排队工作，通过ConditionObject构建一个等待队列，当线程调用await之后线程会加入等待队列，当其他线程调用signal之后
+            线程将从等待队列移到同步队列进行锁竞争。
+            AQS作为基础组件，对于锁的实现有两种不同的模式，共享模式（Semaphore）和独占模式（ReentrantLock），不管是共享模式还是独占模式都是基于
+            AQS实现的，内部都维持着一个同步队列和多个等待队列。
+    12.JUC并发包：ReentrantLock、Condition、Semaphore、CountDownLatch 、CyclicBarrier
+       - ReentrantLock：基于AQS实现的独占重入锁，同一个线程可以多次获取同一把锁，释放相同的次数，灵活，多种获取锁方式。
+       - Condition：可以让线程在合适的时间地点进行等待，或者在特定的时刻通知线程继续执行
+       - Semaphore：信号量用于控制访问公共资源的线程数量，用于流量控制；多个线程间还是存在并发问题
+       - CountDownLatch：闭锁，一种同步的方法，延迟线程进度直到线程到达某个终点状态，只能使用一次，基于AQS实现
+       - CyclicBarrier：循环栅栏，一个同步辅助类，允许一组线程相互等待，直到达到某个公共屏障点，内部通过一个ReentrantLock和Condition进行计算等待
+    13.线程池
+        - 线程过多对性能的影响：会耗尽CPU和内存资源，创建和关闭线程需要花费过多时间，大量线程回收给GC带来压力，延长GC停顿时间
+        - 创建线程池：JDK实现的线程池ThreadPoolExecutor，corePoolSize指定线程池中的线程数量，maxPoolSize指定线程池中最大的线程数量，
+            keepAliveTime指定多余线程存活时长，timeUnit制动keepAliveTime单位，workQueue任务队列，threadFactory线程工厂，handle拒绝策略
+        - 任务队列的几种实现：SynchronousQueue（没有容量，总是将任务交给线程执行，没有线程则新建，大于最大线程数，则执行拒绝）、
+            ArrayBlockingQueue（有界队列，任务大于corePoolSize则将任务加入任务队列，若队列已满，则创建线程，若线程数量大于maxPoolSize则执行拒绝）、
+            LinkedBlockingQueue（无界队列，任务大于corePoolSize加入任务队列，直到资源耗尽）、PriorityBlockingQueue（优先队列）
+        - 拒绝策略：AbortPolicy（直接抛异常）、CallerRunsPolicy（调用线程运行被丢弃任务）、DiscardOledestPolicy（丢弃最老任务）、DiscardPolicy（丢弃无法处理的任务）
+    14.ThreadLocal：为每个线程创建一个单独的变量副本，提供了保持对象的方法和避免参数传递的复杂性；每个Thread中维护这一个ThreadLocalMap，
+        key是一个ThreadLocal的弱引用，当key的弱引用被GC回收，value却不能回收，则会出现内存泄漏
+
+六、Java 中常见容器
+    1.有序集合List
+        - ArrayList：新建是创建一个空的Object数组，第一次add时扩展容量为10，空间不足是扩展为原来的1.5倍，通过Arrays.copyOf进行拷贝
+        - LinkedList：由内部类Node构建的一个FIFO双向链表
+        - Vector：线程安全的list，通过方法加synchronized
+        - CopyOnWriteArrayList：写入时先加锁读到数组，然后扩展加入新元素，最后赋值解锁；读支持并发读
+    2.无序无重复集合Set
+        - HashSet：由HashMap的key构成
+        - LinkedHashSet：底层由LinkedHashMap实现，由hashCode决定元素的存储位置，同时使用链表维护元素的次序，插入性能低于HashSet，遍历时要快
+        - TreeSet：TreeSet可以确保集合元素处于排序状态
+
+    3.Map容器
+        - HashMap：基于哈希表的数据结构，初始容量16，默认负载因子0.75
+        - HashTable：线程安全的哈希表
+        - LinkedHashMap：继承HashMap，底层使用哈希表和双向链表保存元素
+        - ConcurrentHashMap：高并发容器，在JDK1.7版本中，ConcurrentHashMap的数据结构是由一个Segment数组和多个HashEntry组成，
+        Segment数组的意义就是将一个大的table分割成多个小的table来进行加锁，也就是上面的提到的锁分离技术，而每一个Segment元素存储的是HashEntry数组+链表，
+        这个和HashMap的数据存储结构一样。
+        JDK1.8的实现已经摒弃了Segment的概念，而是直接用Node数组+链表+红黑树的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap
 
 
+七、Dubbo
+    1.dubbo中用到的设计模式：工厂模式、装饰器模式、责任链模式、观察者模式、动态代理模式
+    2.dubbo中的注解：SPI（标识一个扩展点，接口上）、Adaptive（作用在方法上，根据方法参数来调用具体实现类的对应方法）、
+        Activate（作用于类上，标识Filter是否加入执行器责任链中）
+    3.dubbo中的插件机制：每个组件接口都有一个ExtensionLoader负责加载、存储该组件的扩展点，有三种加载方式：名称加载扩展点、加载激活扩展点（filter）、加载自适应扩展点
+    4.服务提供者初始化，dubbo服务提供者在ServiceConfig的export方法中开始暴露服务，选用服务端口默认20880；
+    - 生成URL对象，URL是dubbo中的核心模型，包含了调用链路中的注册中心、服务端配置、消费端配置，有两种URL（注册中心URL、服务URL）；
+    - 生成本地服务代理，scope没有设置成remote，服务同时会在本地暴露，生成一个本地服务代理对象，本地调用dubbo接口时直接调用本地代理不走网络请求
+    - 生成远程服务代理，它会生成一个Invoker，该Invoker是服务ref（实现类）的一个代理包含了携带服务信息的URL对象，Invoker的invoke方法被调用时最终调到ref指定的服务实现，Invoker创建之后
+    接着由Protocol组件来创建Exporter，这里有RegistryProtocol创建会包装进Listener和Filter，在RegistryProtocol.doLocalExport执行暴露逻辑，真正执行服务暴露的是DubboProtocol，这里启动服务监听，
+    再回到RegistryProtocol中完成把服务注册到注册中心，提供者会监听configurators节点，感知注册中心的配置变化
+   5.服务消费者初始化，ReferenceBean是一个FactoryBean，在init方法中开始初始化消费者，RegistryProtocol.refer方法中先把消费者注册到注册中心，然后监听providers、configurators、routers节点，消费端
+   会本地缓存远程服务提供者、注册中心配置、路由配置信息，消除消费端对注册中心的强依赖，DubboProtocol.refer中创建一个DubboInvoker对象，该Invoker对象持有服务Class、providerUrl、
+   负责和提供端通信的ExchangeClient，Invoker对象保存在DubboProtocol的invokers集合中，构建DubboInvoker时会创建一个或多个ExchangeClient用来处理和提供端的连接，默认一个URL只会创建一个ExchangeClient，由
+   connections参数控制，RegistryProtocol.doRefer方法的最后，由Cluster组件来创建一个Invoker并返回一个扩展链，默认failover，最后生成消费端服务代理
+   6.远程服务调用过程，消费者调用接口方法最终进入InvokerInvocationHandler的invoke方法，是否执行mock，加入负载均衡和路由、容错策略，然后由DubboInvoker执行，判断执行方法单向、异步、同步（通过锁进行等待，
+   当超时或有结果返回时通知，通过唯一ID实现请求与返回对应），消费者请求编码->提供者请求解码->提供者处理请求->提供者响应结果编码->消费者响应结果解码
+   7.请求编码：16个字节的固定消息头，其中包括2字节魔数，第三字节指定请求还是响应和序列化方式，八个字节的请求ID，4字节请求数据长度；
+   响应编码：16字节数据头，2字节魔数，1字节序列化方式，1字节响应状态，8字节响应ID和请求ID一致，4字节消息长度

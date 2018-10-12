@@ -1,0 +1,3 @@
+defaults=com.github.sources.dubbo.base.extension.DefaultExtensionImpl
+other=com.github.sources.dubbo.base.extension.OtherExtensionImpl
+adaptive=com.github.sources.dubbo.base.extension.MyAdaptiveExtension

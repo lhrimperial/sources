@@ -16,6 +16,7 @@
         <module>source-dubbo-api</module>
         <module>source-dubbo-provider</module>
         <module>source-dubbo-consumer</module>
+        <module>source-dubbo-base</module>
     </modules>
 
     <properties>
