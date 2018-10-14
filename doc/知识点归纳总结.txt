@@ -117,11 +117,89 @@
     - 生成远程服务代理，它会生成一个Invoker，该Invoker是服务ref（实现类）的一个代理包含了携带服务信息的URL对象，Invoker的invoke方法被调用时最终调到ref指定的服务实现，Invoker创建之后
     接着由Protocol组件来创建Exporter，这里有RegistryProtocol创建会包装进Listener和Filter，在RegistryProtocol.doLocalExport执行暴露逻辑，真正执行服务暴露的是DubboProtocol，这里启动服务监听，
     再回到RegistryProtocol中完成把服务注册到注册中心，提供者会监听configurators节点，感知注册中心的配置变化
-   5.服务消费者初始化，ReferenceBean是一个FactoryBean，在init方法中开始初始化消费者，RegistryProtocol.refer方法中先把消费者注册到注册中心，然后监听providers、configurators、routers节点，消费端
-   会本地缓存远程服务提供者、注册中心配置、路由配置信息，消除消费端对注册中心的强依赖，DubboProtocol.refer中创建一个DubboInvoker对象，该Invoker对象持有服务Class、providerUrl、
-   负责和提供端通信的ExchangeClient，Invoker对象保存在DubboProtocol的invokers集合中，构建DubboInvoker时会创建一个或多个ExchangeClient用来处理和提供端的连接，默认一个URL只会创建一个ExchangeClient，由
-   connections参数控制，RegistryProtocol.doRefer方法的最后，由Cluster组件来创建一个Invoker并返回一个扩展链，默认failover，最后生成消费端服务代理
-   6.远程服务调用过程，消费者调用接口方法最终进入InvokerInvocationHandler的invoke方法，是否执行mock，加入负载均衡和路由、容错策略，然后由DubboInvoker执行，判断执行方法单向、异步、同步（通过锁进行等待，
-   当超时或有结果返回时通知，通过唯一ID实现请求与返回对应），消费者请求编码->提供者请求解码->提供者处理请求->提供者响应结果编码->消费者响应结果解码
-   7.请求编码：16个字节的固定消息头，其中包括2字节魔数，第三字节指定请求还是响应和序列化方式，八个字节的请求ID，4字节请求数据长度；
-   响应编码：16字节数据头，2字节魔数，1字节序列化方式，1字节响应状态，8字节响应ID和请求ID一致，4字节消息长度
+    5.服务消费者初始化，ReferenceBean是一个FactoryBean，在init方法中开始初始化消费者，RegistryProtocol.refer方法中先把消费者注册到注册中心，然后监听providers、configurators、routers节点，消费端
+    会本地缓存远程服务提供者、注册中心配置、路由配置信息，消除消费端对注册中心的强依赖，DubboProtocol.refer中创建一个DubboInvoker对象，该Invoker对象持有服务Class、providerUrl、
+    负责和提供端通信的ExchangeClient，Invoker对象保存在DubboProtocol的invokers集合中，构建DubboInvoker时会创建一个或多个ExchangeClient用来处理和提供端的连接，默认一个URL只会创建一个ExchangeClient，由
+    connections参数控制，RegistryProtocol.doRefer方法的最后，由Cluster组件来创建一个Invoker并返回一个扩展链，默认failover，最后生成消费端服务代理
+    6.远程服务调用过程，消费者调用接口方法最终进入InvokerInvocationHandler的invoke方法，是否执行mock，加入负载均衡和路由、容错策略，然后由DubboInvoker执行，判断执行方法单向、异步、同步（通过锁进行等待，
+    当超时或有结果返回时通知，通过唯一ID实现请求与返回对应），消费者请求编码->提供者请求解码->提供者处理请求->提供者响应结果编码->消费者响应结果解码
+    7.请求编码：16个字节的固定消息头，其中包括2字节魔数，第三字节指定请求还是响应和序列化方式，八个字节的请求ID，4字节请求数据长度；
+    响应编码：16字节数据头，2字节魔数，1字节序列化方式，1字节响应状态，8字节响应ID和请求ID一致，4字节消息长度
+
+八、Spring
+    1.Spring IOC和AOP概念
+    2.注入方式：接口注入、set注入、构造方法注入
+    3.Spring bean作用域：singleton、prototype、request、session、global session
+    4.Spring框架中常见的设计模式：工厂方法、单例模式、适配器模式、装饰器模式、代理模式、观察者模式、策略模式、模板方法
+    5.Spring bean的生命周期：
+        - Spring 对bean 进行实例化，默认单例
+        - Spring 对bean 进行依赖注入
+        - 如果Bean实现了BeanNameAware接口，Spring将Bean的ID传给setBeanName（）方法
+        - 如果Bean实现了BeanFactoryAware接口，Spring将BeanFactory传给setBeanFactory方法
+        - 如果Bean实现了ApplicationContextAware接口，Spring将applicationContext传给setApplicationContext方法
+        - 如果Bean实现了BeanPostProcessor接口，它的postProcessBeforeInitialization方法将被调用
+        - 如果Bean实现了InitializingBean接口，它的afterPropertiesSet方法将被调用，如果有init-method，该方法也会被调用
+        - 如果Bean实现了BeanPostProcessor接口，它的postProcessAfterInitialization方法将被调用
+        - 此时Bean已经准备就绪，可以被使用，一直存在应用上下文中，直到应用上下文被销毁
+        - 若Bean实现DisposableBean接口，Spring将调用它的distroy方法，和distroy-method方法
+    6.Spring容器可分为两条主要设计路线，BeanFactory是IOC容器的基础，提供了IOC容器最基本的功能，ApplicationContext继承了BeanFactory，
+    另一方面实现了一些高级接口，赋予了更高级的IOC容器特性。
+    Spring IOC容器的主要功能是创建和管理Spring Bean对象以及Bean属性注入，Spring容器通过ResourceLoader/Resolver读取Bean的配置文件并
+    转换成统一资源对象Resource，然后通过BeanDefinitionReader转化成Spring内部对Bean的描述对象BeanDefinition，然后通过BeanRegistry注册
+    到BeanFactory中，供后续转换成Bean对象使用
+    7.常见的ApplicationContext实现
+        - FileSystemXMLApplicationContext：从文件绝对路径加载配置文件
+        - ClassPathXMLApplicationContext：从classpath加载配置文件
+        - XMLWebApplicationContext：web中使用
+        - AnnotationConfigApplicationContext：Spring Boot非Web项目使用
+        - AnnotationConfigEmbeddedWebApplicationContext：Spring Boot Web项目中使用
+    8.Spring IOC容器启动过程（Spring Boot为例）
+        - Spring Boot默认一些类在META-INF/spring.factories中，通过SpringFactoriesLoader加载，在initialize方法中会加载ApplicationContextInitializer、
+        ApplicationListener供后续启动过程中使用
+        - SpringApplication的run方法中会触发一些容器启动事件，先是ApplicationStartedEvent，然后ApplicationEnvironmentPreparedEvent，比如ConfigFileApplicationListener
+        就是这时候触发的，加载application.properties配置，然后创建ApplicationContext（AnnotationConfigEmbeddedWebApplicationContext）上下文，
+        这里实例化AnnotatedBeanDefinitionReader、ClassPathBeanDefinitionScanner扫描注解定义的Bean的工具，接着触发ApplicationPreparedEvent，
+        这阶段导入EnableAutoConfiguration自动配置类，接着调用Spring IOC启动核心AbstractApplicationContext中refresh方法
+        refresh方法中：
+        1）传统的Spring在这里创建BeanFactory并读取bean的定义文件，加载、解析、注册BeanDefinition，Spring Boot不在这里创建
+        2）为BeanFactory配置容器特性，例如类加载器、事件处理器等
+        3）容器的某些子类指定特殊的BeanPost事件处理器，Spring Boot中这里实现注解定义的Bean的扫描工作
+        4）调用所有注册的BeanFactoryPostProcessor的Bean
+        5）注册所有实现了BeanPostProcessor接口的Bean
+        6）onRefresh调用容器子类某些特殊Bean的初始化，模板方法，Spring Boot中这里创建内嵌Tomcat
+        7）实例化单例Bean
+    9.Spring MVC 初始化
+        - DispatcherServletAutoConfiguration中实例化DispatcherServlet，从父类HttpServletBean的init方法开始
+        - spring是一个大的父容器，springmvc是其中的一个子容器。父容器不能访问子容器对象，但是子容器可以访问父容器对象。一般做一个ssm框架项目的时候，
+        扫描@controller注解类的对象是在springmvc容器中。而扫描@service、@component、@Repository等注解类的对象都是在spring容器中。
+        在FrameworkServlet的initWebApplicationContext方法中初始化子容器，在DispatchServlet的onRefresh中初始化MVC九大组件
+        initMultipartResolver(context);//初始化文件上传解析器
+        initLocaleResolver(context);//初始化本地解析器
+        initThemeResolver(context);//初始化主题解析器
+        initHandlerMappings(context);//初始化处理器映射器
+        initHandlerAdapters(context);//初始化处理器适配器
+        initHandlerExceptionResolvers(context);//初始化异常解析器
+        initRequestToViewNameTranslator(context);//初始化请求到视图名称解析器
+        initViewResolvers(context);//初始化视图解析器
+        initFlashMapManager(context);
+        - 处理请求过程doDispatch
+        1）处理文件上传请求
+        2）解析请求，获取HandlerExecutionChain对象
+        3）从HandlerExecutionChain对象获取HandlerAdapter对象，实际上是从HandlerMapping对象中获取
+        4）在controller方法执行前，执行拦截器的相关方法（pre）
+        5）执行HandlerAdapter对象的handler方法，返回ModelAndView
+        6）在controller方法执行后，执行拦截器的相关方法（post）
+        7）进行视图解析
+
+八、MySql
+    1.事务ACID特性：原子性、一致性、隔离性、持久性
+    2.CAP理论：CAP指的是Consistency(强一致性)、Availability(可用性)、Partition tolerance(分区容错性)。
+    3.BASE就是为了解决关系型数据库强一致性引起的可用性降低而提出的解决方案，基本可用、软状态、最终一致
+    4.事务隔离级别：读未提交、读已提交（解决脏读）、可重复读（解决不可重复读，MySQL InnoDB通过MVCC解决幻读）、可串行化
+    5.Spring事务
+        - 传播行为：PROPAGATION_REQUIRED、PROPAGATION_SUPPORTS、PROPAGATION_MANDATORY、PROPAGATION_REQUIRED_NEW、PROPAGATION_NOT_SUPPORTED
+        、PROPAGATION_NEVER、PROPAGATION_NESTED
+        - 隔离规则：
+        - 回滚规则：
+    5.MySQL锁
+    6.MySQL索引
