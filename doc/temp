@@ -1,18 +1,30 @@
-八、MySql
-    1.事务ACID特性：原子性、一致性、隔离性、持久性
-    2.CAP理论：CAP指的是Consistency(强一致性)、Availability(可用性)、Partition tolerance(分区容错性)。
-    3.BASE就是为了解决关系型数据库强一致性引起的可用性降低而提出的解决方案，基本可用、软状态、最终一致
-    4.事务隔离级别：读未提交、读已提交（解决脏读）、可重复读（解决不可重复读，MySQL InnoDB通过MVCC解决幻读）、可串行化
-    5.Spring事务
-        - 传播行为：PROPAGATION_REQUIRED、PROPAGATION_SUPPORTS、PROPAGATION_MANDATORY、PROPAGATION_REQUIRED_NEW、PROPAGATION_NOT_SUPPORTED
-        、PROPAGATION_NEVER、PROPAGATION_NESTED
-        - 隔离规则：
-        - 回滚规则：
-    5.MySQL锁
-    6.MySQL索引
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 
 九、Redis
 十、设计模式及优化
+
+
+
+jsp 热加载
+spring bean并行初始化
+选用netty的理由
+bms与mq比较 优势
+设置线程数的要看哪些参数

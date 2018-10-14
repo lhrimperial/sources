@@ -36,6 +36,25 @@
     Processor用于将连接接收到的socket封装成Request，实现的是Http协议；Adapter用于将Request交给Container具体处理。
     4.EndPoint中有两个内部类，Acceptor和Poller，Acceptor主要负责监听网络连接且进行任务分发的后台线程，Acceptor接收网络请求然后将socket交给Poller，Poller负责
     执行数据的读取和业务处理。
+    5.tomcat类加载器
+        - tomcat类加载器需要解决的几个问题：为了避免冲突，需要为每个webapp下的项目使用的类库建立隔离机制；不同的webapp项目支持共享类库；类加载器需要支持热插拔功能
+        - tomcat最重要的是Common类加载器，他的父级加载器是应用类加载器，负责加载 ${catalina.base}/lib、${catalina.home}/lib 目录下面所有的 .jar 文件和 .class 文件。
+            有commonLoader、catalinaLoader、sharedLoader三类加载器，都属于同一个实例。
+        - webapp类加载器：tomcat设计了为每个webapp下的项目单独使用一个WebappClassLoader类加载器，tomcat8使用的是ParallelWebappClassLoader，支持并行加载类，
+            start 过程会读取我们熟悉的 /WEB-INF/classes、/WEB-INF/lib 资源。
+        - WebappLoader：单独的类加载器是无法获取 webapp 的资源信息的，因此 tomcat 引入了 WebappLoader，便于访问 Context 组件的信息，同时为 Context 提供类加载的能力支持
+            设置reloadable 属性为true支持热部署
+        - tomcat启动时ClassLoader加载流程
+            1）tomcat启动时调用System ClassLoader即AppClassLoader加载${catalina.home}/bin里面的jar，就是tomcat启动相关的jar
+            2）tomcat启动类Bootstrap中有三个ClassLoader属性，catalinaClassLoader、commonClassLoader、sharedClassLoader，他们都是同一个实例，用来加载${catalina.home}/lib
+                下的jar
+            3）一个Context容器代表一个app应用，Context->WebappLoader->WebClassLoader,并且Thread.contextClassLoader=WebClassLoader。
+                应用程序中的jsp文件、class类、lib/*.jar包，都是WebClassLoader加载的。
+        - 当Jsp文件修改的时候，Tomcat更新步骤：
+            1)当访问1.jsp的时候，1.jsp的包装类JspServletWrapper会去比较1.jsp文件最新修改时间和上次的修改时间，以此判断1.jsp是否修改过。
+            2）1.jsp修改过的话，那么jspservletWrapper会清除相关引用，包括1.jsp编译后的servlet实例和加载这个servlet的JasperLoader实例。
+            3）重新创建一个JasperLoader实例，重新加载修改过后的1.jsp，重新生成一个Servlet实例。
+            4）返回修改后的1.jsp内容给用户。
 
 五、JVM与多线程
     1.Java内存区域：程序计数器、虚拟机栈、本地方法栈、Java堆、方法区
@@ -82,8 +101,40 @@
             ArrayBlockingQueue（有界队列，任务大于corePoolSize则将任务加入任务队列，若队列已满，则创建线程，若线程数量大于maxPoolSize则执行拒绝）、
             LinkedBlockingQueue（无界队列，任务大于corePoolSize加入任务队列，直到资源耗尽）、PriorityBlockingQueue（优先队列）
         - 拒绝策略：AbortPolicy（直接抛异常）、CallerRunsPolicy（调用线程运行被丢弃任务）、DiscardOledestPolicy（丢弃最老任务）、DiscardPolicy（丢弃无法处理的任务）
+        - 使用线程池的优势：
+            提高资源利用率：线程池可以重复利用已经创建好的线程，减少线程创建和销毁的巨大开销
+            提高响应速度：线程池中有待分配的线程时，当任务到来时，无需创建线程就能执行
+            具有可管理行：线程池会根据当前系统的特点对线程池内的线程进行优化处理，减少创建和销毁线程带来的系统开销
+        - 线程池执行原理：创建线程池时不会一开始就创建线程，添加任务的时候才开始创建线程。线程池执行任务时，先获取线程池中的线程数量，当线程数量小于coreSize时，
+            会将任务通过addWorker直接调度任务（Worker包装了线程创建和调度执行的过程），否则通过workQueue.offer()进入等待队列，如果进入等待队列失败，则把任务交给
+            线程池，如果线程池中的线程数量已经到达了最大值，则执行解决策略
+
     14.ThreadLocal：为每个线程创建一个单独的变量副本，提供了保持对象的方法和避免参数传递的复杂性；每个Thread中维护这一个ThreadLocalMap，
         key是一个ThreadLocal的弱引用，当key的弱引用被GC回收，value却不能回收，则会出现内存泄漏
+    15.类加载过程：加载、验证、准备、解析、初始化、使用、卸载
+        - 加载：通过类的全限定名找类的二进制字节流，将字节流所代表的静态存储结构转化为方法区的运行时数据结构，生成一个代表这个类的Class对象
+        - 验证：验证字节流是否和Class文件格式，解析语义
+        - 准备：在方法区中为类变量分配内存并设置内存初始值
+        - 解析：JVM将常量池内的符号引用替换为直接引用
+        - 初始化：执行类构造器<clinit>（）方法，<clinit>方法是由编译器自动收集所有类变量赋值动作和静态语句块合并产生的，顺序有源文件中的顺序决定
+    16.Java中赋值顺序
+        1）父类静态变量赋值和执行静态代码块
+        2）自身静态变量赋值和执行静态代码块
+        3）父类成员变量赋值和执行父类代码块
+        4）父类构造方法赋值
+        5）自身成员变量赋值和执行自身代码块
+        6）自身构造方法赋值
+    17.JDK中的类加载器
+        - 启动类加载器（Bootstrap CLassLoader），加载Java的核心类库，${JAVA_HOME}\lib下的jvm指定类库，它有C++实现，无法被Java应用程序直接使用
+        - 扩展类加载器（Extension ClassLoader），父加载器是启动类加载器，它是一个ClassLoader实例，负责加载${JAVA_HOME}/lig/ext目录下的类库
+        - 应用类加载器（Application ClassLoader），也叫作系统类加载器（System ClassLoader),负责加载用户类路指定的类库，getSystemClassLoader方法返回
+        sun.misc.Launcher$AppClassLoader实例，它由启动类加载器加载
+        - 自定义类加载器，应用程序根据自己的需求开发的类加载器，可以继承ClassLoader也可不继承
+    18.双亲委派模型的工作过程
+        如果一个类加载器收到加载的请求，它首先不会自己去尝试加载，而是把这个请求委派给父加载器去完成，每个层次的加载器都是如此，因此所有的加载请求都会传到
+        顶层的启动类加载器中，只有当父加载器反馈自己无法完成这个加载请求时，子加载器才会尝试自己去加载。
+        在JVM中使用完全类名+ClassLoader对象实例ID作为一个类的唯一标识，不同的加载器加载了同一个类名实例是不同的，也不能进行强制转换，每个线程中都有一个ClassLoader，
+        并且会从父线程中继承，在没有显示的指定哪个类加载器时，默认使用当前线程的类加载器
 
 六、Java 中常见容器
     1.有序集合List
