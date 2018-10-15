@@ -31,7 +31,7 @@
  <body>
    <h1>403 Access Denied</h1>
    <p>
-    You are not authorized to view this page.
+       You are not authorized to view this template.
    </p>
    <p>
     By default the Host Manager is only accessible from a browser running on the

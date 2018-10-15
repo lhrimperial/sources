@@ -142,24 +142,24 @@
     <xsd:annotation>
       <xsd:documentation>
 
-        The jsp-property-groupType is used to group a number of
-        files so they can be given global property information.
-        All files so described are deemed to be JSP files.  The
-        following additional properties can be described:
+          The jsp-property-groupType is used to group a number of
+          files so they can be given global property information.
+          All files so described are deemed to be JSP files. The
+          following additional properties can be described:
 
-        - Control whether EL is ignored.
-        - Control whether scripting elements are invalid.
-        - Indicate pageEncoding information.
-        - Indicate that a resource is a JSP document (XML).
-        - Prelude and Coda automatic includes.
-        - Control whether the character sequence #{ is allowed
-        when used as a String literal.
-        - Control whether template text containing only
-        whitespaces must be removed from the response output.
-        - Indicate the default contentType information.
-        - Indicate the default buffering model for JspWriter
-        - Control whether error should be raised for the use of
-        undeclared namespaces in a JSP page.
+          - Control whether EL is ignored.
+          - Control whether scripting elements are invalid.
+          - Indicate pageEncoding information.
+          - Indicate that a resource is a JSP document (XML).
+          - Prelude and Coda automatic includes.
+          - Control whether the character sequence #{ is allowed
+          when used as a String literal.
+          - Control whether template text containing only
+          whitespaces must be removed from the response output.
+          - Indicate the default contentType information.
+          - Indicate the default buffering model for JspWriter
+          - Control whether error should be raised for the use of
+          undeclared namespaces in a JSP template.
 
       </xsd:documentation>
     </xsd:annotation>
@@ -189,17 +189,17 @@
         <xsd:annotation>
           <xsd:documentation>
 
-            The valid values of page-encoding are those of the
-            pageEncoding page directive.  It is a
-            translation-time error to name different encodings
-            in the pageEncoding attribute of the page directive
-            of a JSP page and in a JSP configuration element
-            matching the page.  It is also a translation-time
-            error to name different encodings in the prolog
-            or text declaration of a document in XML syntax and
-            in a JSP configuration element matching the document.
-            It is legal to name the same encoding through
-            multiple mechanisms.
+              The valid values of page-encoding are those of the
+              pageEncoding page directive. It is a
+              translation-time error to name different encodings
+              in the pageEncoding attribute of the page directive
+              of a JSP page and in a JSP configuration element
+              matching the template. It is also a translation-time
+              error to name different encodings in the prolog
+              or text declaration of a document in XML syntax and
+              in a JSP configuration element matching the document.
+              It is legal to name the same encoding through
+              multiple mechanisms.
 
           </xsd:documentation>
         </xsd:annotation>
@@ -330,11 +330,11 @@
         <xsd:annotation>
           <xsd:documentation>
 
-            The default behavior when a tag with unknown namespace is used
-            in a JSP page (regular syntax) is to silently ignore it.  If
-            set to true, then an error must be raised during the translation
-            time when an undeclared tag is used in a JSP page.  Disabled
-            (false) by default.
+              The default behavior when a tag with unknown namespace is used
+              in a JSP page (regular syntax) is to silently ignore it. If
+              set to true, then an error must be raised during the translation
+              time when an undeclared tag is used in a JSP template. Disabled
+              (false) by default.
 
           </xsd:documentation>
         </xsd:annotation>

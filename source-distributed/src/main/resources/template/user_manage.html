@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>user</title>
+    <!-- 引入样式 -->
+    <link type="text/css" rel="stylesheet" href="element-ui/index.css"/>
+</head>
+<body>
+<div id="app">
+    <el-form :model="userForm" ref="userForm" label-position="left" label-width="0px" class="demo-ruleForm login-container">
+        <el-form-item prop="userName">
+            <el-input type="text" v-model="userForm.userName" auto-complete="off" placeholder="用户名"></el-input>
+        </el-form-item>
+        <el-form-item prop="password">
+            <el-input type="password" v-model="userForm.password" @keyup.enter.native="handleSubmit" auto-complete="off" placeholder="密码"></el-input>
+        </el-form-item>
+        <el-form-item style="width:100%;">
+            <el-button type="primary" style="width:100%;" @click.native.prevent="handleSubmit" size="medium">
+                提&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;交
+            </el-button>
+        </el-form-item>
+    </el-form>
+</div>
+
+
+<!-- 先引入 Vue -->
+<script type="text/javascript" src="vue/vue.min.js"></script>
+<!-- 引入组件库 -->
+<script type="text/javascript" src="element-ui/index.js"></script>
+<script type="text/javascript" src="axios/axios.min.js"></script>
+<script>
+    var vue = new Vue({
+        el: "#app",
+        data: {
+            userForm: {
+                userName:'',
+                password:''
+            },
+            token:''
+        },
+        methods: {
+            handleSubmit: function () {
+                var self = this;
+                axios.post("saveUser", self.userForm,{headers:{token:self.token}}).then(function (response) {
+                    if (response.data.success) {
+//                        this.$message.info(response.data.respMsg);
+                        alert(response.data.respMsg);
+                    }else {
+//                        this.$message.error(response.data.respMsg);
+                        alert(response.data.respMsg);
+                    }
+
+                }).catch(function (error) {
+                    console.log(error);
+                })
+            }
+        },
+        mounted:function () {
+            var self = this;
+            axios.get("getToken").then(function (response) {
+                self.token = response.data;
+            }).catch(function (error) {
+                console.log(error);
+            })
+        }
+    })
+</script>
+
+</body>
+</html>

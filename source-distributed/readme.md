@@ -1,0 +1,1 @@
+1. 启动项目，访问http://localhost:8080/user_manage.html

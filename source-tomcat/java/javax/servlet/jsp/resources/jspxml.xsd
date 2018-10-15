@@ -226,7 +226,7 @@
   <xsd:simpleType name = "ContentType">
     <xsd:annotation>
       <xsd:documentation>
-        Content type and character encoding for this page.
+          Content type and character encoding for this template.
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base = "xsd:string">
@@ -237,7 +237,7 @@
   <xsd:simpleType name = "PageEncoding">
     <xsd:annotation>
       <xsd:documentation>
-        Page Encoding for this page.
+          Page Encoding for this template.
       </xsd:documentation>
     </xsd:annotation>
     <xsd:restriction base = "xsd:string">

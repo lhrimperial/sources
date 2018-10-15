@@ -27,10 +27,10 @@
   <short-name>debug</short-name>
   <uri>http://tomcat.apache.org/debug-taglib</uri>
   <description>
-    This tag library defines no tags.  Instead, its purpose is encapsulated
-    in the TagLibraryValidator implementation that simply outputs the XML
-    version of a JSP page to standard output, whenever this tag library is
-    referenced in a "taglib" directive in a JSP page.
+      This tag library defines no tags. Instead, its purpose is encapsulated
+      in the TagLibraryValidator implementation that simply outputs the XML
+      version of a JSP page to standard output, whenever this tag library is
+      referenced in a "taglib" directive in a JSP template.
   </description>
   <validator>
     <validator-class>validators.DebugValidator</validator-class>

@@ -356,7 +356,7 @@ with &quot;\&quot;</td>
 <tr>
 <td>SCRIPT_NAME</td>
 <td>
-  The name of the web page.</td>
+    The name of the web template.</td>
 </tr>
 <tr>
 <td>SERVER_ADDR</td>

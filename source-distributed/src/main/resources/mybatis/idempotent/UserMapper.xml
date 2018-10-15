@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.github.sources.distributed.idempotent.mapper.UserMapper">
+
+    <select id="findByID" resultType="com.github.sources.distributed.idempotent.domain.UserPO">
+        select user_name as userName,password as password from t_user where id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="com.github.sources.distributed.idempotent.domain.UserPO" keyProperty="id">
+        insert into t_user (`user_name`, `password`) values(#{userName},#{password})
+    </insert>
+
+
+    <delete id="removeUser">
+        delete from user where id = #{id}
+    </delete>
+
+</mapper>

@@ -312,7 +312,7 @@
             Additionally, you will need to ensure that a user has been
             setup for the target Tomcat Manager (which TCD uses) otherwise the TCD
             will not authenticate with the Tomcat Manager and the deployment will
-            fail. To do this, see the Tomcat Manager page.
+            fail. To do this, see the Tomcat Manager template.
         </p>
 
         <ul>
