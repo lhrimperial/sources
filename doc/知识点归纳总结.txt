@@ -27,6 +27,13 @@
     3.Netty通过编写多个ChannelHandler 来处理不同的功能，通过ChannelPipeline来保证ChannelHandler的处理顺序。每个Channel创建的时候都会关联一个ChannelPipeline，
     ChannelHandler通过封装成ChannelHandlerContext链表结构添加到ChannelPipeline中以此来保证ChannelHandler的执行顺序。
     4.调用顺序：先是调用ChannelPipeline中的fireXXX方法，接着是ChannelHandlerContext中的fireXXX方法，最后是ChannelHandler中的XXX方法
+    5.选择Netty的原因：Netty是业界最流行的NIO框架之一，它的健壮性、功能、性能、可定制性和可扩展性在同类框架中都是首屈一指的
+        1）API使用简单，开发门槛低；
+        2）功能强大，预置了多种编解码功能，支持多种主流协议；
+        3）定制能力强，可以通过ChannelHandler对通信框架进行灵活的扩展；
+        4）性能高，通过与其它业界主流的NIO框架对比，Netty的综合性能最优；
+        5）成熟、稳定，Netty修复了已经发现的所有JDK NIO BUG，业务开发人员不需要再为NIO的BUG而烦恼
+        6）社区活跃，版本迭代周期短，发现的BUG可以被及时修复，同时，更多的新功能会被加入；
 
 四、Tomcat
     1.Tomcat的最顶层是一个Server，代表着整个服务，控制着整个tomcat的生命周期，一个Server包含至少一个Service，用于提供具体的服务。
@@ -108,6 +115,10 @@
         - 线程池执行原理：创建线程池时不会一开始就创建线程，添加任务的时候才开始创建线程。线程池执行任务时，先获取线程池中的线程数量，当线程数量小于coreSize时，
             会将任务通过addWorker直接调度任务（Worker包装了线程创建和调度执行的过程），否则通过workQueue.offer()进入等待队列，如果进入等待队列失败，则把任务交给
             线程池，如果线程池中的线程数量已经到达了最大值，则执行解决策略
+        - 任务一般可分为：CPU密集型、IO密集型、混合型，对于不同类型的任务需要分配不同大小的线程池。
+            1）CPU密集型任务 尽量使用较小的线程池，一般为CPU核心数+1
+            2）IO密集型任务 可以使用稍大的线程池，一般为2*CPU核心数
+            3）混合型任务 可以将任务分成IO密集型和CPU密集型任务，然后分别用不同的线程池去处理
 
     14.ThreadLocal：为每个线程创建一个单独的变量副本，提供了保持对象的方法和避免参数传递的复杂性；每个Thread中维护这一个ThreadLocalMap，
         key是一个ThreadLocal的弱引用，当key的弱引用被GC回收，value却不能回收，则会出现内存泄漏
@@ -244,7 +255,7 @@
 
 八、MySql
     1.事务ACID特性：原子性、一致性、隔离性、持久性
-    2.CAP理论：CAP指的是Consistency(强一致性)、Availability(可用性)、Partition tolerance(分区容错性)。
+    2.分布式系统CAP理论：CAP指的是Consistency(强一致性)、Availability(可用性)、Partition tolerance(分区容错性)。
     3.BASE就是为了解决关系型数据库强一致性引起的可用性降低而提出的解决方案，基本可用、软状态、最终一致
     4.事务隔离级别：读未提交、读已提交（解决脏读）、可重复读（解决不可重复读，MySQL InnoDB通过MVCC解决幻读）、可串行化
     5.Spring事务
@@ -253,4 +264,17 @@
         - 隔离规则：
         - 回滚规则：
     5.MySQL锁
-    6.MySQL索引
+        - 共享锁、排它锁、意向共享锁、意向排它锁
+        - 行锁：纪录锁（锁住索引记录的一行）、间隙锁（锁住一个索引区间，开区间）、next-key锁（record lock + gap lock, 左开右闭区间）
+        - 页锁：
+        - 表锁：
+    6.MySQL索引：索引是一种方便快速查找的数据结构。
+        - 磁盘预读：系统从磁盘读取数据到内存时是以磁盘块（block）为基本单位，InnoDB存储引擎中默认每个页的大小为16KB
+        - B-Tree：多路平衡查找树，B-Tree中的每个节点有升序排序的关键字和数据和指向子树根节点的指针，指针指向子节点所在磁盘地址
+        - B+Tree: 非叶子节点上只存储key值信息，所有记录按照键值大小顺序放在叶子节点，这样每个节点加大了key值数量，降低B+Tree高度
+        - MyISAM: 索引文件和数据文件分开的，MyISAM引擎使用B+Tree作为索引结构，叶节点的data域存放的是数据记录的地址,
+            在MyISAM中，主索引和辅助索引（Secondary key）在结构上没有任何区别，只是主索引要求key是唯一的，而辅助索引的key可以重复。
+        - InnoDB: 数据文件本身就是索引文件，表数据文件本身就是按B+Tree组织的一个索引结构，这棵树的叶节点data域保存了完整的数据记录。
+            这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。这种索引叫做聚集索引。InnoDB的所有辅助索引都引用主键作为data域，
+            辅助索引搜索需要检索两遍索引：首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。
+    7.MySQL高可用

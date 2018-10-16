@@ -170,7 +170,13 @@ public class BinAvlTree {
     }
 
 
-
+    /**
+     * 右旋
+     * 将节点左子树顺时针旋转，使得左子树成为父亲节点
+     * 将左子树的右子树作为当前节点的左子树，当前节点作为左子树的右子树，当前节点替换为左子树
+     * @param node
+     * @return
+     */
     public static Node rRotate(Node node) {
         Node left;
         left = node.leftNode;
@@ -180,6 +186,13 @@ public class BinAvlTree {
         return node;
     }
 
+    /**
+     * 左旋
+     * 将节点的右子树绕节点逆时针旋转，使得右子树成为节点的父亲
+     * 将右子树的左子树作为节点的右子树，将当前节点作为右子树的左子树，当前节点替换为右子树
+     * @param node
+     * @return
+     */
     public static Node lRotate(Node node) {
         Node right;
         right = node.rightNode;
