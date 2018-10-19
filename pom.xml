@@ -17,6 +17,7 @@
       <module>source-rocketmq</module>
       <module>source-scloud</module>
       <module>source-distributed</module>
+      <module>source-mybatis</module>
   </modules>
   <packaging>pom</packaging>
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.github.sources.mybatis.mapper.TestMapper">
+    <resultMap id="testResultMap" type="com.github.sources.mybatis.domain.TestEntity">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="date" column="date"/>
+    </resultMap>
+    <sql id="testSql">select * from test_entity<where>id=#{value}</where></sql>
+    <select id="getById" resultType="com.github.sources.mybatis.domain.TestEntity" parameterType="long"><include refid="testSql"/></select>
+</mapper>
