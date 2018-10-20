@@ -18,6 +18,7 @@
       <module>source-scloud</module>
       <module>source-distributed</module>
       <module>source-mybatis</module>
+      <module>source-activemq</module>
   </modules>
   <packaging>pom</packaging>
 
