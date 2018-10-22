@@ -1,3 +1,31 @@
+@(all_describe)
+####知识点
+##### 项目描述
+一、BMS设计，与MQ比较优势
+推送服务平台是基于Netty、zookeeper、Redis、MySQL实现的通用、高效、稳定、解耦业务、易扩展的平台，支持多种协议推送、多种数据格式、优先级等特性。
+基于netty的Reactor线程模型处理大量的客户端连接，大量使用了线程池来处理业务逻辑，如多线程加载数据到redis任务队列，多线程推送消息到分销商。
+根据消息类型对MySQL进行分表，提高DB层的并发能力。把M个消息类型分布到N个节点上去做加载，在节点上M/N个类型通过多线程实现加载，通过Semaphore信号量来控制并发线程数，
+通过锁住一个消息类型来防止多线程重复加载。在推送端通过Http连接池实现Http连接复用。在client、pusher支持FailStore机制来进行节点容错，客户端连接服务时支持负载均衡。
+与MQ比较：
+    易用性，新接入消息类型，MQ新建队列，配置新的消费者
+    消息快速消费，实时性
+    netty适用于大量的连接，与网络IO
+    消息可靠性，引入新的中间件，就引入和新的不确定因素
+    双边需要反馈结果，以便做实时统计
+
+二、幂等设计
+    1.查询、删除：具有天然幂等性
+    2.新增：Token防重复提交，只需要网关这层控制即可；Token的处理机制，还需要缓存调用的处理结果，以判断是否需要放行后续的重试请求，
+        唯一索引，防止新增脏数据
+    3.更新：不仅需要有表单防重复提交的验证，还需要有下面这些更精细的控制，以防止高并发环境中出现脏读，幻读等引起错误的数据更新结果；
+         更新业务接口幂等性解决方案一般是通过各种层面的锁和CAS机制；
+         1）悲观锁，select for update，整个执行过程中锁定要操作的记录；
+         2）乐观锁：CAS
+         3）防重表、分布式锁
+         4）状态机幂等
+         5）通过条件限制（CAS，带上原先的值）
+
+#### 技术点
 一、 TCP/IP Socket
      TCP协议是面向连接的、保证高可靠性的传输协议，IP协议是无连接、不可靠的网络协议
      1.常规应用的四层网络分层：应用层、传输层、网络层、链路层
@@ -34,6 +62,16 @@
         4）性能高，通过与其它业界主流的NIO框架对比，Netty的综合性能最优；
         5）成熟、稳定，Netty修复了已经发现的所有JDK NIO BUG，业务开发人员不需要再为NIO的BUG而烦恼
         6）社区活跃，版本迭代周期短，发现的BUG可以被及时修复，同时，更多的新功能会被加入；
+    Netty的高效并发编程主要体现在如下几点：
+        1) volatile的大量、正确使用;
+        2) CAS和原子类的广泛使用；
+        3) 线程安全容器的使用；
+        4) 通过读写锁提升并发性能。
+    Netty除了使用reactor来提升性能，当然还有
+        1、零拷贝，IO性能优化
+        2、通信上的粘包拆包
+        2、同步的设计
+        3、高性能的序列
 
 四、Tomcat
     1.Tomcat的最顶层是一个Server，代表着整个服务，控制着整个tomcat的生命周期，一个Server包含至少一个Service，用于提供具体的服务。
@@ -45,14 +83,14 @@
     执行数据的读取和业务处理。
     5.tomcat类加载器
         - tomcat类加载器需要解决的几个问题：为了避免冲突，需要为每个webapp下的项目使用的类库建立隔离机制；不同的webapp项目支持共享类库；类加载器需要支持热插拔功能
-        - tomcat最重要的是Common类加载器，他的父级加载器是应用类加载器，负责加载 ${catalina.base}/lib、${catalina.home}/lib 目录下面所有的 .jar 文件和 .class 文件。
+        - tomcat最重要的是Common类加载器，他的父级加载器是应用类加载器，负责加载 `${catalina.base}/lib、${catalina.home}/lib` 目录下面所有的 .jar 文件和 .class 文件。
             有commonLoader、catalinaLoader、sharedLoader三类加载器，都属于同一个实例。
         - webapp类加载器：tomcat设计了为每个webapp下的项目单独使用一个WebappClassLoader类加载器，tomcat8使用的是ParallelWebappClassLoader，支持并行加载类，
             start 过程会读取我们熟悉的 /WEB-INF/classes、/WEB-INF/lib 资源。
         - WebappLoader：单独的类加载器是无法获取 webapp 的资源信息的，因此 tomcat 引入了 WebappLoader，便于访问 Context 组件的信息，同时为 Context 提供类加载的能力支持
             设置reloadable 属性为true支持热部署
         - tomcat启动时ClassLoader加载流程
-            1）tomcat启动时调用System ClassLoader即AppClassLoader加载${catalina.home}/bin里面的jar，就是tomcat启动相关的jar
+            1）tomcat启动时调用System ClassLoader即AppClassLoader加载`${catalina.home}/bin`里面的jar，就是tomcat启动相关的jar
             2）tomcat启动类Bootstrap中有三个ClassLoader属性，catalinaClassLoader、commonClassLoader、sharedClassLoader，他们都是同一个实例，用来加载${catalina.home}/lib
                 下的jar
             3）一个Context容器代表一个app应用，Context->WebappLoader->WebClassLoader,并且Thread.contextClassLoader=WebClassLoader。
@@ -120,32 +158,47 @@
             2）IO密集型任务 可以使用稍大的线程池，一般为2*CPU核心数
             3）混合型任务 可以将任务分成IO密集型和CPU密集型任务，然后分别用不同的线程池去处理
 
-    14.ThreadLocal：为每个线程创建一个单独的变量副本，提供了保持对象的方法和避免参数传递的复杂性；每个Thread中维护这一个ThreadLocalMap，
-        key是一个ThreadLocal的弱引用，当key的弱引用被GC回收，value却不能回收，则会出现内存泄漏
-    15.类加载过程：加载、验证、准备、解析、初始化、使用、卸载
-        - 加载：通过类的全限定名找类的二进制字节流，将字节流所代表的静态存储结构转化为方法区的运行时数据结构，生成一个代表这个类的Class对象
-        - 验证：验证字节流是否和Class文件格式，解析语义
-        - 准备：在方法区中为类变量分配内存并设置内存初始值
-        - 解析：JVM将常量池内的符号引用替换为直接引用
-        - 初始化：执行类构造器<clinit>（）方法，<clinit>方法是由编译器自动收集所有类变量赋值动作和静态语句块合并产生的，顺序有源文件中的顺序决定
-    16.Java中赋值顺序
-        1）父类静态变量赋值和执行静态代码块
-        2）自身静态变量赋值和执行静态代码块
-        3）父类成员变量赋值和执行父类代码块
-        4）父类构造方法赋值
-        5）自身成员变量赋值和执行自身代码块
-        6）自身构造方法赋值
-    17.JDK中的类加载器
-        - 启动类加载器（Bootstrap CLassLoader），加载Java的核心类库，${JAVA_HOME}\lib下的jvm指定类库，它有C++实现，无法被Java应用程序直接使用
-        - 扩展类加载器（Extension ClassLoader），父加载器是启动类加载器，它是一个ClassLoader实例，负责加载${JAVA_HOME}/lig/ext目录下的类库
-        - 应用类加载器（Application ClassLoader），也叫作系统类加载器（System ClassLoader),负责加载用户类路指定的类库，getSystemClassLoader方法返回
-        sun.misc.Launcher$AppClassLoader实例，它由启动类加载器加载
-        - 自定义类加载器，应用程序根据自己的需求开发的类加载器，可以继承ClassLoader也可不继承
-    18.双亲委派模型的工作过程
-        如果一个类加载器收到加载的请求，它首先不会自己去尝试加载，而是把这个请求委派给父加载器去完成，每个层次的加载器都是如此，因此所有的加载请求都会传到
-        顶层的启动类加载器中，只有当父加载器反馈自己无法完成这个加载请求时，子加载器才会尝试自己去加载。
-        在JVM中使用完全类名+ClassLoader对象实例ID作为一个类的唯一标识，不同的加载器加载了同一个类名实例是不同的，也不能进行强制转换，每个线程中都有一个ClassLoader，
-        并且会从父线程中继承，在没有显示的指定哪个类加载器时，默认使用当前线程的类加载器
+14.ThreadLocal：为每个线程创建一个单独的变量副本，提供了保持对象的方法和避免参数传递的复杂性；每个Thread中维护这一个ThreadLocalMap，
+    key是一个ThreadLocal的弱引用，当key的弱引用被GC回收，value却不能回收，则会出现内存泄漏
+15.类加载过程：加载、验证、准备、解析、初始化、使用、卸载
+    - 加载：通过类的全限定名找类的二进制字节流，将字节流所代表的静态存储结构转化为方法区的运行时数据结构，生成一个代表这个类的Class对象
+    - 验证：验证字节流是否和Class文件格式，解析语义
+    - 准备：在方法区中为类变量分配内存并设置内存初始值
+    - 解析：JVM将常量池内的符号引用替换为直接引用
+    - 初始化：执行类构造器`<clinit>（）`方法`，<clinit>`方法是由编译器自动收集所有类变量赋值动作和静态语句块合并产生的，顺序有源文件中的顺序决定
+16.Java中赋值顺序
+    1）父类静态变量赋值和执行静态代码块
+    2）自身静态变量赋值和执行静态代码块
+    3）父类成员变量赋值和执行父类代码块
+    4）父类构造方法赋值
+    5）自身成员变量赋值和执行自身代码块
+    6）自身构造方法赋值
+17.JDK中的类加载器
+    - 启动类加载器（Bootstrap CLassLoader），加载Java的核心类库，`${JAVA_HOME}\lib`下的jvm指定类库，它有C++实现，无法被Java应用程序直接使用
+    - 扩展类加载器（Extension ClassLoader），父加载器是启动类加载器，它是一个ClassLoader实例，负责加载`${JAVA_HOME}/lig/ext`目录下的类库
+    - 应用类加载器（Application ClassLoader），也叫作系统类加载器（System ClassLoader),负责加载用户类路指定的类库，getSystemClassLoader方法返回
+    sun.misc.Launcher$AppClassLoader实例，它由启动类加载器加载
+    - 自定义类加载器，应用程序根据自己的需求开发的类加载器，可以继承ClassLoader也可不继承
+18.双亲委派模型的工作过程
+    如果一个类加载器收到加载的请求，它首先不会自己去尝试加载，而是把这个请求委派给父加载器去完成，每个层次的加载器都是如此，因此所有的加载请求都会传到
+    顶层的启动类加载器中，只有当父加载器反馈自己无法完成这个加载请求时，子加载器才会尝试自己去加载。
+    在JVM中使用完全类名+ClassLoader对象实例ID作为一个类的唯一标识，不同的加载器加载了同一个类名实例是不同的，也不能进行强制转换，每个线程中都有一个ClassLoader，
+    并且会从父线程中继承，在没有显示的指定哪个类加载器时，默认使用当前线程的类加载器
+ 19.JVM参数
+    堆：-Xms -Xmx -Xmn(分给新生代) -XX:SurvivorRatio=8(新生代Eden和Survivor比例)
+    栈：-Xss -Xoss（本地栈）
+    方法区：-XX：PermSize=   -XX:MaxPermSize=
+    老年代阀值：-XX:MaxTenuringThreshold=
+20.JVM 工具
+    jps：输出JVM中运行的进程状态
+    jstack：查看Java进程中线程的栈信息
+    jmap：查看进程中堆内存使用情况
+    jstat：采样
+21.CPU 100%定位
+    1）top -c （显示进程列表），输入P，进程按照CPU使用率排序
+    2）top -Hp PID（显示PID中线程列表），输入P，线程按照CPU使用率排序
+    3）将PID转成十六进制
+    4）jstack 10765 | grep ‘0x2a34’ -C5 –color （查看线程栈）
 
 六、Java 中常见容器
     1.有序集合List
@@ -158,14 +211,14 @@
         - LinkedHashSet：底层由LinkedHashMap实现，由hashCode决定元素的存储位置，同时使用链表维护元素的次序，插入性能低于HashSet，遍历时要快
         - TreeSet：TreeSet可以确保集合元素处于排序状态
 
-    3.Map容器
-        - HashMap：基于哈希表的数据结构，初始容量16，默认负载因子0.75
-        - HashTable：线程安全的哈希表
-        - LinkedHashMap：继承HashMap，底层使用哈希表和双向链表保存元素
-        - ConcurrentHashMap：高并发容器，在JDK1.7版本中，ConcurrentHashMap的数据结构是由一个Segment数组和多个HashEntry组成，
-        Segment数组的意义就是将一个大的table分割成多个小的table来进行加锁，也就是上面的提到的锁分离技术，而每一个Segment元素存储的是HashEntry数组+链表，
-        这个和HashMap的数据存储结构一样。
-        JDK1.8的实现已经摒弃了Segment的概念，而是直接用Node数组+链表+红黑树的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap
+3.Map容器
+    - HashMap：基于哈希表的数据结构，初始容量16，默认负载因子0.75
+    - HashTable：线程安全的哈希表
+    - LinkedHashMap：继承HashMap，底层使用哈希表和双向链表保存元素
+    - ConcurrentHashMap：高并发容器，在JDK1.7版本中，ConcurrentHashMap的数据结构是由一个Segment数组和多个HashEntry组成，
+    Segment数组的意义就是将一个大的table分割成多个小的table来进行加锁，也就是上面的提到的锁分离技术，而每一个Segment元素存储的是HashEntry数组+链表，
+    这个和HashMap的数据存储结构一样。
+    JDK1.8的实现已经摒弃了Segment的概念，而是直接用Node数组+链表+红黑树的数据结构来实现，并发控制使用Synchronized和CAS来操作，整个看起来就像是优化过且线程安全的HashMap
 
 
 七、Dubbo
@@ -278,3 +331,60 @@
             这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。这种索引叫做聚集索引。InnoDB的所有辅助索引都引用主键作为data域，
             辅助索引搜索需要检索两遍索引：首先检索辅助索引获得主键，然后用主键到主索引中检索获得记录。
     7.MySQL高可用方案
+      - 主从复制（异步复制）过程
+          1）主数据库会将变更信息写入二进制日志文件（binlog）中
+          2）从数据库会开启一个IO线程，与主数据库建立一个连接，主数据库启动一个二进制日志转储线程，从数据库从这个转储线程中读取主数据库上的变更事件，
+              并将变更事件记录到中继日志中
+          3）从数据库启动一个SQL线程从中继日志中读取变更事件，并将变更事件同步到从数据库中。
+      - 主从复制延迟的原因
+          1）主库的从库太多，导致复制延迟，从库3-5个为宜
+          2）从库的硬件比主库差，导致复制延迟
+          3）慢SQL过多
+          4）主从复制设计问题，主从复制单线程，如果主库写并发太大，来不及传送到从库，就会导致延迟。设计多线程复制。
+          5）主从之间的网络延迟
+      - binlog日志复制的三种实现方式
+          1）基于SQL语句的复制(statement-based replication, SBR)，binlog文件较小，不是所有的UPDATE语句都能被复制
+          2）基于行的复制(row-based replication, RBR)，任何情况都可以被复制，binlog 大了很多
+          3）混合模式复制(mixed-based replication, MBR)。
+      - MySQL通过复制（Replication）实现存储系统的高可用。目前，MySQL支持的复制方式有：
+          1）异步复制（Asynchronous Replication）：原理最简单，性能最好。但是主备之间数据不一致的概率很大。
+          2）半同步复制（Semi-synchronous Replication）：相比异步复制，半同步复制牺牲了一定的性能，提升了主备之间数据的一致性（有一些情况还是会出现主备数据不一致）。
+              MySQL两种略有不同的半同步复制，AFTER_SYNC（日志复制到Slave之后，Master再commit）、AFTER_COMMIT（Master commit之后再将日志复制到Slave）。
+          3）组复制（Group Replication）：基于Paxos算法实现分布式数据复制的强一致性。只要大多数机器存活就能保证系统可用。相比半同步复制，
+              Group Replication的数据一致性和系统可用性更高。
+      - MHA（Master High Availability）目前在MySQL高可用方面是一个相对成熟的解决方案，在MySQL故障切换过程中，MHA能做到在0~30秒之内自动完成数据库的故障切换操作，
+          并且在进行故障切换的过程中，MHA能在较大程度上保证数据的一致性，以达到真正意义上的高可用。MHA可以与半同步复制结合起来。
+          如果只有一个slave已经收到了的二进制日志，MHA可以将的二进制日志应用于其他所有的slave服务器上，因此可以保证所有节点的数据一致性。
+          1）流程：当master出现故障时，通过对比slave之间I/O线程读取masterbinlog的位置，选取最接近的slave做为latestslave。
+          其它slave通过与latest slave对比生成差异中继日志。在latest slave上应用从master保存的binlog，同时将latest slave提升为master。
+          最后在其它slave上应用相应的差异中继日志并开始从新的master开始复制。
+          2）优势：1）故障切换迅速 2）master故障不会导致数据不一致 3）无需修改当前的MySQL设置 4）无需增加大量的服务器 5）五性能下降
+
+九、Redis
+
+十、设计模式
+    1.设计模式七大原则
+        1）开闭原则 2）里氏替换原则 3）依赖倒转原则 4）接口隔离原则 5）组合/聚合复用原则 6）迪米特法则 7）单一职责原则
+    2.常见设计模式
+        1）单列模式
+        2）装饰器模式
+        3）适配器模式
+        4）模板方法模式
+        5）代理模式
+        6）责任链模式
+        7）观察者模式
+
+十一、Java性能优化
+    1.设计优化
+        1）善于使用设计模式
+        2）Java缓冲区
+        3）缓存
+        4）对象复用---池的使用
+        5）并行代替串行
+        6）时间换空间：不引入中间变量实现两个数字的交换。代价是增加 CPU 运算。
+        7）空间换时间：使用下标数组排序。
+    2.程序优化
+    3.JVM 优化
+
+十二、遇到问题
+
