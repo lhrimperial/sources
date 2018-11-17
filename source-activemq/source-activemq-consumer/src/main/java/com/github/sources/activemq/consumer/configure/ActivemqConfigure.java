@@ -3,6 +3,7 @@ package com.github.sources.activemq.consumer.configure;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.apache.activemq.jms.pool.PooledConnectionFactory;
 import org.springframework.boot.autoconfigure.jms.JmsProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +30,14 @@ public class ActivemqConfigure {
         return new ActiveMQConnectionFactory(BROKER_URL);
     }
 
+    @Bean
+    public PooledConnectionFactory pooledConnectionFactory() {
+        PooledConnectionFactory factory = new PooledConnectionFactory();
+        factory.setConnectionFactory(connectionFactory());
+        factory.setMaxConnections(20);
+        return factory;
+    }
+
     @Bean("queueDestination")
     public ActiveMQQueue queueDestination() {
         return new ActiveMQQueue(DESTINATION_QUEUE);
@@ -40,17 +49,17 @@ public class ActivemqConfigure {
     }
 
     @Bean
-    public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ActiveMQConnectionFactory connectionFactory) {
+    public JmsListenerContainerFactory<?> jmsListenerContainerTopic(ConnectionFactory pooledConnectionFactory) {
         DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
         bean.setPubSubDomain(true);
 //        bean.setConcurrency("3-5");
-        bean.setConnectionFactory(connectionFactory);
+        bean.setConnectionFactory(pooledConnectionFactory);
         return bean;
     }
     @Bean
-    public JmsListenerContainerFactory<?> jmsListenerContainerQueue(ActiveMQConnectionFactory connectionFactory) {
+    public JmsListenerContainerFactory<?> jmsListenerContainerQueue(ConnectionFactory pooledConnectionFactory) {
         DefaultJmsListenerContainerFactory bean = new DefaultJmsListenerContainerFactory();
-        bean.setConnectionFactory(connectionFactory);
+        bean.setConnectionFactory(pooledConnectionFactory);
         return bean;
     }
 

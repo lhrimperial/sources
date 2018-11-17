@@ -22,9 +22,9 @@ public class SpringProducer {
     private JmsMessagingTemplate jmsMessagingTemplate;
 
     public void sendMessage() {
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             jmsMessagingTemplate.convertAndSend(activeMQQueue, "发送第 "+i+" 个消息");
-            jmsMessagingTemplate.convertAndSend(activeMQTopic, "发送第 "+i+" 个消息");
+//            jmsMessagingTemplate.convertAndSend(activeMQTopic, "发送第 "+i+" 个消息");
         }
     }
 }

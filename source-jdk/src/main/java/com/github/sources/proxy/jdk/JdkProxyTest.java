@@ -10,8 +10,8 @@ public class JdkProxyTest {
 
     public static void main(String[] args){
 //        testStaticProxy();
-//        testDynamicProxy();
-        generateProxyClass();
+        testDynamicProxy();
+//        generateProxyClass();
     }
 
     public static void generateProxyClass() {

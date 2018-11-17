@@ -24,6 +24,7 @@ public class MessageSender {
             connection = factory.createConnection();
             //启动连接
             connection.start();
+            ((ActiveMQConnection)connection).setUseAsyncSend(false);
             //创建会话
             session = connection.createSession(Boolean.FALSE, Session.AUTO_ACKNOWLEDGE);
             //创建一个队列

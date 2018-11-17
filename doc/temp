@@ -1,0 +1,27 @@
+四、Tomcat
+    1.Tomcat的最顶层是一个Server，代表着整个服务，控制着整个tomcat的生命周期，一个Server包含至少一个Service，用于提供具体的服务。
+    2.Service主要包含两个部分，Connector和Container，Connector负责处理网络连接相关的事情，并提供Socket和Request和Response的转换，
+    Container负责封装和管理Servlet，以及处理Request请求，一个Service只有一个Container，但是可以有多个Connector，这是因为一个服务可以处理多个连接
+    3.Connector使用ProtocolHandler来处理网络请求的，包含三个部件，EndPoint、Processor、Adapter，Endpoint用来处理底层的Socket网络连接，实现的是TCP/IP协议；
+    Processor用于将连接接收到的socket封装成Request，实现的是Http协议；Adapter用于将Request交给Container具体处理。
+    4.EndPoint中有两个内部类，Acceptor和Poller，Acceptor主要负责监听网络连接且进行任务分发的后台线程，Acceptor接收网络请求然后将socket交给Poller，Poller负责
+    执行数据的读取和业务处理。
+    5.tomcat类加载器
+        - tomcat类加载器需要解决的几个问题：为了避免冲突，需要为每个webapp下的项目使用的类库建立隔离机制；不同的webapp项目支持共享类库；类加载器需要支持热插拔功能
+        - tomcat最重要的是Common类加载器，他的父级加载器是应用类加载器，负责加载 `${catalina.base}/lib、${catalina.home}/lib` 目录下面所有的 .jar 文件和 .class 文件。
+            有commonLoader、catalinaLoader、sharedLoader三类加载器，都属于同一个实例。
+        - webapp类加载器：tomcat设计了为每个webapp下的项目单独使用一个WebappClassLoader类加载器，tomcat8使用的是ParallelWebappClassLoader，支持并行加载类，
+            start 过程会读取我们熟悉的 /WEB-INF/classes、/WEB-INF/lib 资源。
+        - WebappLoader：单独的类加载器是无法获取 webapp 的资源信息的，因此 tomcat 引入了 WebappLoader，便于访问 Context 组件的信息，同时为 Context 提供类加载的能力支持
+            设置reloadable 属性为true支持热部署
+        - tomcat启动时ClassLoader加载流程
+            1）tomcat启动时调用System ClassLoader即AppClassLoader加载`${catalina.home}/bin`里面的jar，就是tomcat启动相关的jar
+            2）tomcat启动类Bootstrap中有三个ClassLoader属性，catalinaClassLoader、commonClassLoader、sharedClassLoader，他们都是同一个实例，用来加载${catalina.home}/lib
+                下的jar
+            3）一个Context容器代表一个app应用，Context->WebappLoader->WebClassLoader,并且Thread.contextClassLoader=WebClassLoader。
+                应用程序中的jsp文件、class类、lib/*.jar包，都是WebClassLoader加载的。
+        - 当Jsp文件修改的时候，Tomcat更新步骤：
+            1)当访问1.jsp的时候，1.jsp的包装类JspServletWrapper会去比较1.jsp文件最新修改时间和上次的修改时间，以此判断1.jsp是否修改过。
+            2）1.jsp修改过的话，那么jspservletWrapper会清除相关引用，包括1.jsp编译后的servlet实例和加载这个servlet的JasperLoader实例。
+            3）重新创建一个JasperLoader实例，重新加载修改过后的1.jsp，重新生成一个Servlet实例。
+            4）返回修改后的1.jsp内容给用户。

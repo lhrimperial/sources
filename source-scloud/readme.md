@@ -1,0 +1,6 @@
+- 启动一个服务注册中心，只需要一个注解@EnableEurekaServer
+- 通过注解@EnableEurekaClient 表明自己是一个eurekaclient.
+- 通过@EnableDiscoveryClient向服务中心注册
+- 通过@LoadBalanced注解表明这个restRemplate开启负载均衡的功能。
+- @EnableFeignClients注解开启Feign的功能
+- 定义一个feign接口，通过@ FeignClient（“服务名”），来指定调用哪个服务
