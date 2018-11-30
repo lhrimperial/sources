@@ -16,6 +16,7 @@
     <modules>
         <module>source-sboot-war</module>
         <module>source-sboot-jar</module>
+        <module>source-sboot-security</module>
     </modules>
 
 </project>
