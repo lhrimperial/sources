@@ -19,6 +19,7 @@
       <module>source-distributed</module>
       <module>source-mybatis</module>
       <module>source-activemq</module>
+      <module>source-security</module>
   </modules>
   <packaging>pom</packaging>
 
