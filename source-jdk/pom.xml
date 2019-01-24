@@ -13,7 +13,7 @@
     <artifactId>source-jdk</artifactId>
 
     <name>source-jdk</name>
-   <!-- <build>
+    <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -25,15 +25,14 @@
             </plugin>
         </plugins>
     </build>
--->
     <dependencies>
-        <dependency>
+       <!-- <dependency>
              <groupId>com.sun</groupId>
              <artifactId>tools</artifactId>
              <version>1.8</version>
              <scope>system</scope>
-            <!-- <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>-->
-        </dependency>
+            &lt;!&ndash; <systemPath>${JAVA_HOME}/lib/tools.jar</systemPath>&ndash;&gt;
+        </dependency>-->
 
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -64,4 +63,6 @@
             <version>1.2.3</version>
         </dependency>
     </dependencies>
+
+
 </project>
