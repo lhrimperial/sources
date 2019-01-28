@@ -20,6 +20,7 @@
       <module>source-mybatis</module>
       <module>source-activemq</module>
       <module>source-security</module>
+      <module>source-docker</module>
   </modules>
   <packaging>pom</packaging>
 
