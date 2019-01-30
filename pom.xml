@@ -21,6 +21,7 @@
       <module>source-activemq</module>
       <module>source-security</module>
       <module>source-docker</module>
+      <module>source-aall</module>
   </modules>
   <packaging>pom</packaging>
 
