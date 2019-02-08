@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2003, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2012, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -33,6 +33,11 @@ import com.sun.javadoc.*;
  * The exception name my be the name of a type variable.
  * Note: @exception is a backwards compatible synonymy for @throws.
  *
+ *  <p><b>This is NOT part of any supported API.
+ *  If you write code that depends on this, you do so at your own risk.
+ *  This code and its internal interfaces are subject to change or
+ *  deletion without notice.</b>
+ *
  * @author Robert Field
  * @author Atul M Dambalkar
  * @see ExecutableMemberDocImpl#throwsTags()
@@ -42,6 +47,11 @@ class ThrowsTagImpl extends TagImpl implements ThrowsTag {
 
     private final String exceptionName;
     private final String exceptionComment;
+
+    /**
+     * Cached inline tags.
+     */
+    private Tag[] inlineTags;
 
     ThrowsTagImpl(DocImpl holder, String name, String text) {
         super(holder, name, text);
@@ -93,6 +103,7 @@ class ThrowsTagImpl extends TagImpl implements ThrowsTag {
      * Return the kind of this tag.  Always "@throws" for instances
      * of ThrowsTagImpl.
      */
+    @Override
     public String kind() {
         return "@throws";
     }
@@ -102,10 +113,14 @@ class ThrowsTagImpl extends TagImpl implements ThrowsTag {
      * TagImpls consisting of SeeTagImpl(s) and text containing TagImpl(s).
      *
      * @return TagImpl[] Array of tags with inline SeeTagImpls.
-     * @see TagImpl#inlineTagImpls()
-     * @see ParamTagImpl#inlineTagImpls()
+     * @see TagImpl#inlineTags()
+     * @see ParamTagImpl#inlineTags()
      */
+    @Override
     public Tag[] inlineTags() {
-        return Comment.getInlineTags(holder, exceptionComment());
+        if (inlineTags == null) {
+            inlineTags = Comment.getInlineTags(holder, exceptionComment());
+        }
+        return inlineTags;
     }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, 2008, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2003, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -27,17 +27,19 @@ package com.sun.tools.javadoc;
 
 import com.sun.javadoc.*;
 
-
+import com.sun.source.util.TreePath;
 import com.sun.tools.javac.code.Kinds;
 import com.sun.tools.javac.code.Scope;
 import com.sun.tools.javac.code.Symbol.*;
-import com.sun.tools.javac.tree.JCTree.*;
 import com.sun.tools.javac.util.List;
-import com.sun.tools.javac.util.Names;
-import com.sun.tools.javac.util.Position;
 
 /**
  * Represents an annotation type.
+ *
+ *  <p><b>This is NOT part of any supported API.
+ *  If you write code that depends on this, you do so at your own risk.
+ *  This code and its internal interfaces are subject to change or
+ *  deletion without notice.</b>
  *
  * @author Scott Seligman
  * @since 1.5
@@ -46,13 +48,12 @@ import com.sun.tools.javac.util.Position;
 public class AnnotationTypeDocImpl
         extends ClassDocImpl implements AnnotationTypeDoc {
 
-    AnnotationTypeDocImpl(DocEnv env, ClassSymbol sym) {
-        this(env, sym, null, null, null);
+    public AnnotationTypeDocImpl(DocEnv env, ClassSymbol sym) {
+        this(env, sym, null);
     }
 
-    AnnotationTypeDocImpl(DocEnv env, ClassSymbol sym,
-                          String doc, JCClassDecl tree, Position.LineMap lineMap) {
-        super(env, sym, doc, tree, lineMap);
+    public AnnotationTypeDocImpl(DocEnv env, ClassSymbol sym, TreePath treePath) {
+        super(env, sym, treePath);
     }
 
     /**
@@ -89,7 +90,6 @@ public class AnnotationTypeDocImpl
      * Elements are always public, so no need to filter them.
      */
     public AnnotationTypeElementDoc[] elements() {
-        Names names = tsym.name.table.names;
         List<AnnotationTypeElementDoc> elements = List.nil();
         for (Scope.Entry e = tsym.members().elems; e != null; e = e.sibling) {
             if (e.sym != null && e.sym.kind == Kinds.MTH) {

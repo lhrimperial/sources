@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2009, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2009, 2012, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -39,7 +39,6 @@ import java.nio.charset.CharsetDecoder;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
-import java.nio.file.attribute.BasicFileAttributes;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.NestingKind;
 import javax.tools.JavaFileObject;
@@ -205,6 +204,7 @@ abstract class PathFileObject implements JavaFileObject {
 
     @Override
     public OutputStream openOutputStream() throws IOException {
+        fileManager.flushCache(this);
         ensureParentDirectoriesExist();
         return Files.newOutputStream(path);
     }
@@ -241,6 +241,7 @@ abstract class PathFileObject implements JavaFileObject {
 
     @Override
     public Writer openWriter() throws IOException {
+        fileManager.flushCache(this);
         ensureParentDirectoriesExist();
         return new OutputStreamWriter(Files.newOutputStream(path), fileManager.getEncodingName());
     }

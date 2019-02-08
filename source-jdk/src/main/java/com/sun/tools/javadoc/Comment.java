@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2009, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -25,16 +25,20 @@
 
 package com.sun.tools.javadoc;
 
-import java.util.Locale;
-
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import com.sun.javadoc.*;
-
 import com.sun.tools.javac.util.ListBuffer;
 
 /**
  * Comment contains all information in comment part.
  *      It allows users to get first sentence of this comment, get
  *      comment for different tags...
+ *
+ *  <p><b>This is NOT part of any supported API.
+ *  If you write code that depends on this, you do so at your own risk.
+ *  This code and its internal interfaces are subject to change or
+ *  deletion without notice.</b>
  *
  * @author Kaiyang Liu (original)
  * @author Robert Field (rewrite)
@@ -115,7 +119,7 @@ class Comment {
                                 state = TAG_NAME;
                             }
                             break;
-                    };
+                    }
                     if (ch == '\n') {
                         newLine = true;
                     } else if (!isWhite) {
@@ -134,7 +138,7 @@ class Comment {
                     case IN_TEXT:
                         parseCommentComponent(tagName, textStart, lastNonWhite+1);
                         break;
-                };
+                }
             }
 
             /**
@@ -294,6 +298,7 @@ class Comment {
     static Tag[] getInlineTags(DocImpl holder, String inlinetext) {
         ListBuffer<Tag> taglist = new ListBuffer<Tag>();
         int delimend = 0, textstart = 0, len = inlinetext.length();
+        boolean inPre = false;
         DocEnv docenv = holder.env;
 
         if (len == 0) {
@@ -307,6 +312,7 @@ class Comment {
                                            inlinetext.substring(textstart)));
                 break;
             } else {
+                inPre = scanForPre(inlinetext, textstart, linkstart, inPre);
                 int seetextstart = linkstart;
                 for (int i = linkstart; i < inlinetext.length(); i++) {
                     char c = inlinetext.charAt(i);
@@ -317,18 +323,20 @@ class Comment {
                      }
                 }
                 String linkName = inlinetext.substring(linkstart+2, seetextstart);
-                //Move past the white space after the inline tag name.
-                while (Character.isWhitespace(inlinetext.
-                                                  charAt(seetextstart))) {
-                    if (inlinetext.length() <= seetextstart) {
-                        taglist.append(new TagImpl(holder, "Text",
-                                                   inlinetext.substring(textstart, seetextstart)));
-                        docenv.warning(holder,
-                                       "tag.Improper_Use_Of_Link_Tag",
-                                       inlinetext);
-                        return taglist.toArray(new Tag[taglist.length()]);
-                    } else {
-                        seetextstart++;
+                if (!(inPre && (linkName.equals("code") || linkName.equals("literal")))) {
+                    //Move past the white space after the inline tag name.
+                    while (Character.isWhitespace(inlinetext.
+                                                      charAt(seetextstart))) {
+                        if (inlinetext.length() <= seetextstart) {
+                            taglist.append(new TagImpl(holder, "Text",
+                                                       inlinetext.substring(textstart, seetextstart)));
+                            docenv.warning(holder,
+                                           "tag.Improper_Use_Of_Link_Tag",
+                                           inlinetext);
+                            return taglist.toArray(new Tag[taglist.length()]);
+                        } else {
+                            seetextstart++;
+                        }
                     }
                 }
                 taglist.append(new TagImpl(holder, "Text",
@@ -364,6 +372,17 @@ class Comment {
         return taglist.toArray(new Tag[taglist.length()]);
     }
 
+    /** regex for case-insensitive match for {@literal <pre> } and  {@literal </pre> }. */
+    private static final Pattern prePat = Pattern.compile("(?i)<(/?)pre>");
+
+    private static boolean scanForPre(String inlinetext, int start, int end, boolean inPre) {
+        Matcher m = prePat.matcher(inlinetext).region(start, end);
+        while (m.find()) {
+            inPre = m.group(1).isEmpty();
+        }
+        return inPre;
+    }
+
     /**
      * Recursively find the index of the closing '}' character for an inline tag
      * and return it.  If it can't be found, return -1.
@@ -389,23 +408,22 @@ class Comment {
     }
 
     /**
-     * Recursively search for the string "{@" followed by
+     * Recursively search for the characters '{', '@', followed by
      * name of inline tag and white space,
      * if found
      *    return the index of the text following the white space.
      * else
      *    return -1.
      */
-    private static int inlineTagFound(DocImpl holder,  String inlinetext, int start) {
+    private static int inlineTagFound(DocImpl holder, String inlinetext, int start) {
         DocEnv docenv = holder.env;
-        int linkstart;
-        if (start == inlinetext.length() ||
-              (linkstart = inlinetext.indexOf("{@", start)) == -1) {
+        int linkstart = inlinetext.indexOf("{@", start);
+        if (start == inlinetext.length() || linkstart == -1) {
             return -1;
-        } else if(inlinetext.indexOf('}', start) == -1) {
+        } else if (inlinetext.indexOf('}', linkstart) == -1) {
             //Missing '}'.
             docenv.warning(holder, "tag.Improper_Use_Of_Link_Tag",
-                          inlinetext.substring(linkstart, inlinetext.length()));
+                    inlinetext.substring(linkstart, inlinetext.length()));
             return -1;
         } else {
             return linkstart;
@@ -425,6 +443,7 @@ class Comment {
     /**
      * Return text for this Doc comment.
      */
+    @Override
     public String toString() {
         return text;
     }

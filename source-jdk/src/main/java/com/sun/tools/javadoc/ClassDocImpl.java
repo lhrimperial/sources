@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1997, 2011, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 1997, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -31,15 +31,14 @@ import java.lang.reflect.Modifier;
 import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
+
 import javax.tools.FileObject;
 import javax.tools.JavaFileManager.Location;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.StandardLocation;
 
 import com.sun.javadoc.*;
-
-import static com.sun.javadoc.LanguageVersion.*;
-
+import com.sun.source.util.TreePath;
 import com.sun.tools.javac.code.Flags;
 import com.sun.tools.javac.code.Kinds;
 import com.sun.tools.javac.code.Scope;
@@ -47,24 +46,21 @@ import com.sun.tools.javac.code.Symbol;
 import com.sun.tools.javac.code.Symbol.*;
 import com.sun.tools.javac.code.Type;
 import com.sun.tools.javac.code.Type.ClassType;
-import com.sun.tools.javac.code.TypeTags;
-
+import com.sun.tools.javac.code.TypeTag;
 import com.sun.tools.javac.comp.AttrContext;
 import com.sun.tools.javac.comp.Env;
-
 import com.sun.tools.javac.tree.JCTree;
-import com.sun.tools.javac.tree.JCTree.JCClassDecl;
 import com.sun.tools.javac.tree.JCTree.JCFieldAccess;
 import com.sun.tools.javac.tree.JCTree.JCImport;
 import com.sun.tools.javac.tree.TreeInfo;
-
 import com.sun.tools.javac.util.List;
 import com.sun.tools.javac.util.ListBuffer;
 import com.sun.tools.javac.util.Name;
 import com.sun.tools.javac.util.Names;
 import com.sun.tools.javac.util.Position;
-
 import static com.sun.tools.javac.code.Kinds.*;
+import static com.sun.tools.javac.code.TypeTag.CLASS;
+import static com.sun.tools.javac.tree.JCTree.Tag.*;
 
 /**
  * Represents a java class and provides access to information
@@ -74,6 +70,11 @@ import static com.sun.tools.javac.code.Kinds.*;
  * which may or may not have been processed in this run are
  * referred to using Type (which can be converted to ClassDocImpl,
  * if possible).
+ *
+ *  <p><b>This is NOT part of any supported API.
+ *  If you write code that depends on this, you do so at your own risk.
+ *  This code and its internal interfaces are subject to change or
+ *  deletion without notice.</b>
  *
  * @see Type
  *
@@ -96,17 +97,20 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
      * Constructor
      */
     public ClassDocImpl(DocEnv env, ClassSymbol sym) {
-        this(env, sym, null, null, null);
+        this(env, sym, null);
     }
 
     /**
      * Constructor
      */
-    public ClassDocImpl(DocEnv env, ClassSymbol sym, String documentation,
-                        JCClassDecl tree, Position.LineMap lineMap) {
-        super(env, sym, documentation, tree, lineMap);
+    public ClassDocImpl(DocEnv env, ClassSymbol sym, TreePath treePath) {
+        super(env, sym, treePath);
         this.type = (ClassType)sym.type;
         this.tsym = sym;
+    }
+
+    public com.sun.javadoc.Type getElementType() {
+        return null;
     }
 
     /**
@@ -124,7 +128,14 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
             try {
                 return clazz.flags();
             } catch (CompletionFailure ex) {
-                // quietly ignore completion failures
+                /* Quietly ignore completion failures.
+                 * Note that a CompletionFailure can only
+                 * occur as a result of calling complete(),
+                 * which will always remove the current
+                 * completer, leaving it to be null or
+                 * follow-up completer. Thus the loop
+                 * is guaranteed to eventually terminate.
+                 */
             }
         }
     }
@@ -160,7 +171,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
         if (isEnum() || isInterface() || isAnnotationType()) {
             return false;
         }
-        for (Type t = type; t.tag == TypeTags.CLASS; t = env.types.supertype(t)) {
+        for (Type t = type; t.hasTag(CLASS); t = env.types.supertype(t)) {
             if (t.tsym == env.syms.errorType.tsym ||
                 t.tsym == env.syms.exceptionType.tsym) {
                 return false;
@@ -197,7 +208,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
         if (isEnum() || isInterface() || isAnnotationType()) {
             return false;
         }
-        for (Type t = type; t.tag == TypeTags.CLASS; t = env.types.supertype(t)) {
+        for (Type t = type; t.hasTag(CLASS); t = env.types.supertype(t)) {
             if (t.tsym == env.syms.exceptionType.tsym) {
                 return true;
             }
@@ -213,7 +224,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
         if (isEnum() || isInterface() || isAnnotationType()) {
             return false;
         }
-        for (Type t = type; t.tag == TypeTags.CLASS; t = env.types.supertype(t)) {
+        for (Type t = type; t.hasTag(CLASS); t = env.types.supertype(t)) {
             if (t.tsym == env.syms.errorType.tsym) {
                 return true;
             }
@@ -228,7 +239,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
         if (isEnum() || isInterface() || isAnnotationType()) {
             return false;
         }
-        for (Type t = type; t.tag == TypeTags.CLASS; t = env.types.supertype(t)) {
+        for (Type t = type; t.hasTag(CLASS); t = env.types.supertype(t)) {
             if (t.tsym == env.syms.throwableType.tsym) {
                 return true;
             }
@@ -334,8 +345,13 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
      * </pre>
      */
     public String name() {
-        return getClassName(tsym, false);
+        if (name == null) {
+            name = getClassName(tsym, false);
+        }
+        return name;
     }
+
+    private String name;
 
     /**
      * Return the qualified class name as a String.
@@ -347,8 +363,13 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
      * </pre>
      */
     public String qualifiedName() {
-        return getClassName(tsym, true);
+        if (qualifiedName == null) {
+            qualifiedName = getClassName(tsym, true);
+        }
+        return qualifiedName;
     }
+
+    private String qualifiedName;
 
     /**
      * Return unqualified name of type excluding any dimension information.
@@ -373,8 +394,13 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
      * Return the simple name of this type.
      */
     public String simpleTypeName() {
-        return tsym.name.toString();
+        if (simpleTypeName == null) {
+            simpleTypeName = tsym.name.toString();
+        }
+        return simpleTypeName;
     }
+
+    private String simpleTypeName;
 
     /**
      * Return the qualified name and any type parameters.
@@ -494,7 +520,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
             return null;
         Type sup = env.types.supertype(type);
         return TypeMaker.getType(env,
-                                 (sup != type) ? sup : env.syms.objectType);
+                                 (sup.hasTag(TypeTag.NONE)) ? env.syms.objectType : sup);
     }
 
     /**
@@ -589,8 +615,10 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
         Names names = tsym.name.table.names;
         List<MethodDocImpl> methods = List.nil();
         for (Scope.Entry e = tsym.members().elems; e != null; e = e.sibling) {
-            if (e.sym != null &&
-                e.sym.kind == Kinds.MTH && e.sym.name != names.init) {
+            if (e.sym != null
+                && e.sym.kind == Kinds.MTH
+                && e.sym.name != names.init
+                && e.sym.name != names.clinit) {
                 MethodSymbol s = (MethodSymbol)e.sym;
                 if (!filter || env.shouldDocument(s)) {
                     methods = methods.prepend(env.getMethodDoc(s));
@@ -744,17 +772,16 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
         // search inner classes
         //### Add private entry point to avoid creating array?
         //### Replicate code in innerClasses here to avoid consing?
-        ClassDoc innerClasses[] = innerClasses();
-        for (int i = 0; i < innerClasses.length; i++) {
-            if (innerClasses[i].name().equals(className) ||
-                //### This is from original javadoc but it looks suspicious to me...
-                //### I believe it is attempting to compensate for the confused
-                //### convention of including the nested class qualifiers in the
-                //### 'name' of the inner class, rather than the true simple name.
-                innerClasses[i].name().endsWith(className)) {
-                return innerClasses[i];
+        for (ClassDoc icd : innerClasses()) {
+            if (icd.name().equals(className) ||
+                    //### This is from original javadoc but it looks suspicious to me...
+                    //### I believe it is attempting to compensate for the confused
+                    //### convention of including the nested class qualifiers in the
+                    //### 'name' of the inner class, rather than the true simple name.
+                    icd.name().endsWith("." + className)) {
+                return icd;
             } else {
-                ClassDoc innercd = ((ClassDocImpl) innerClasses[i]).searchClass(className);
+                ClassDoc innercd = ((ClassDocImpl) icd).searchClass(className);
                 if (innercd != null) {
                     return innercd;
                 }
@@ -846,7 +873,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
      * Note that this is not necessarily what the compiler would do!
      *
      * @param methodName the unqualified name to search for.
-     * @param paramTypeArray the array of Strings for method parameter types.
+     * @param paramTypes the array of Strings for method parameter types.
      * @return the first MethodDocImpl which matches, null if not found.
      */
     public MethodDocImpl findMethod(String methodName, String[] paramTypes) {
@@ -973,7 +1000,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
      * Find constructor in this class.
      *
      * @param constrName the unqualified name to search for.
-     * @param paramTypeArray the array of Strings for constructor parameters.
+     * @param paramTypes the array of Strings for constructor parameters.
      * @return the first ConstructorDocImpl which matches, null if not found.
      */
     public ConstructorDoc findConstructor(String constrName,
@@ -1084,7 +1111,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
 
         Name asterisk = tsym.name.table.names.asterisk;
         for (JCTree t : compenv.toplevel.defs) {
-            if (t.getTag() == JCTree.IMPORT) {
+            if (t.hasTag(IMPORT)) {
                 JCTree imp = ((JCImport) t).qualid;
                 if ((TreeInfo.name(imp) != asterisk) &&
                         (imp.type.tsym.kind & Kinds.TYP) != 0) {
@@ -1125,7 +1152,7 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
         if (compenv == null) return new PackageDocImpl[0];
 
         for (JCTree t : compenv.toplevel.defs) {
-            if (t.getTag() == JCTree.IMPORT) {
+            if (t.hasTag(IMPORT)) {
                 JCTree imp = ((JCImport) t).qualid;
                 if (TreeInfo.name(imp) == names.asterisk) {
                     JCFieldAccess sel = (JCFieldAccess)imp;
@@ -1180,6 +1207,13 @@ public class ClassDocImpl extends ProgramElementDocImpl implements ClassDoc {
      * Return null, as this is not a wildcard type.
      */
     public WildcardType asWildcardType() {
+        return null;
+    }
+
+    /**
+     * Returns null, as this is not an annotated type.
+     */
+    public AnnotatedType asAnnotatedType() {
         return null;
     }
 

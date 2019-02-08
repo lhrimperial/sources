@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
+ * Copyright (c) 2010, 2013, Oracle and/or its affiliates. All rights reserved.
  * DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS FILE HEADER.
  *
  * This code is free software; you can redistribute it and/or modify it
@@ -29,6 +29,11 @@ import com.sun.tools.doclets.internal.toolkit.Content;
 
 /**
  * Stores constants for Html Doclet.
+ *
+ *  <p><b>This is NOT part of any supported API.
+ *  If you write code that depends on this, you do so at your own risk.
+ *  This code and its internal interfaces are subject to change or
+ *  deletion without notice.</b>
  *
  * @author Bhavesh Patel
  */
@@ -89,6 +94,12 @@ public class HtmlConstants {
             new Comment("=========== ANNOTATION TYPE REQUIRED MEMBER SUMMARY ===========");
 
     /**
+     * Marker to identify start of annotation type required member summary.
+     */
+    public static final Content START_OF_ANNOTATION_TYPE_FIELD_SUMMARY =
+            new Comment("=========== ANNOTATION TYPE FIELD SUMMARY ===========");
+
+    /**
      * Marker to identify start of constructor summary.
      */
     public static final Content START_OF_CONSTRUCTOR_SUMMARY =
@@ -107,6 +118,12 @@ public class HtmlConstants {
             new Comment("=========== FIELD SUMMARY ===========");
 
     /**
+     * Marker to identify start of properties summary.
+     */
+    public static final Content START_OF_PROPERTY_SUMMARY =
+            new Comment("=========== PROPERTY SUMMARY ===========");
+
+    /**
      * Marker to identify start of method summary.
      */
     public static final Content START_OF_METHOD_SUMMARY =
@@ -119,6 +136,12 @@ public class HtmlConstants {
             new Comment("============ ANNOTATION TYPE MEMBER DETAIL ===========");
 
     /**
+     * Marker to identify start of annotation type field details.
+     */
+    public static final Content START_OF_ANNOTATION_TYPE_FIELD_DETAILS =
+            new Comment("============ ANNOTATION TYPE FIELD DETAIL ===========");
+
+    /**
      * Marker to identify start of method details.
      */
     public static final Content START_OF_METHOD_DETAILS =
@@ -129,6 +152,12 @@ public class HtmlConstants {
      */
     public static final Content START_OF_FIELD_DETAILS =
             new Comment("============ FIELD DETAIL ===========");
+
+    /**
+     * Marker to identify start of property details.
+     */
+    public static final Content START_OF_PROPERTY_DETAILS =
+            new Comment("============ PROPERTY DETAIL ===========");
 
     /**
      * Marker to identify start of constructor details.
@@ -161,6 +190,11 @@ public class HtmlConstants {
      * Html tag for the package name heading.
      */
     public static final HtmlTag PACKAGE_HEADING = HtmlTag.H2;
+
+    /**
+     * Html tag for the profile name heading.
+     */
+    public static final HtmlTag PROFILE_HEADING = HtmlTag.H2;
 
     /**
      * Html tag for the member summary heading.
