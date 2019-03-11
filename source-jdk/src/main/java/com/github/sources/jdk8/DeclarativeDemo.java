@@ -1,6 +1,5 @@
 package com.github.sources.jdk8;
 
-import java.util.Arrays;
 
 /**
  *
