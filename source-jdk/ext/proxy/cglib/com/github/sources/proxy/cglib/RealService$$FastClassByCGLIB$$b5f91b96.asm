@@ -21,42 +21,50 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
     INVOKEVIRTUAL java/lang/Object.hashCode ()I
     LOOKUPSWITCH
       -40645898: L0
-      1826985398: L1
-      1913648695: L2
-      1984935277: L3
-      default: L4
+      33019121: L1
+      1826985398: L2
+      1913648695: L3
+      1984935277: L4
+      default: L5
    L0
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 net/sf/cglib/core/Signature] [java/lang/String]
     LDC "realMethod()V"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
-    ICONST_0
+    IFEQ L6
+    ICONST_1
     IRETURN
    L1
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 net/sf/cglib/core/Signature] [java/lang/String]
-    LDC "equals(Ljava/lang/Object;)Z"
+    LDC "testFinal()V"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
-    ICONST_1
+    IFEQ L6
+    ICONST_0
     IRETURN
    L2
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 net/sf/cglib/core/Signature] [java/lang/String]
-    LDC "toString()Ljava/lang/String;"
+    LDC "equals(Ljava/lang/Object;)Z"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
+    IFEQ L6
     ICONST_2
     IRETURN
    L3
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 net/sf/cglib/core/Signature] [java/lang/String]
-    LDC "hashCode()I"
+    LDC "toString()Ljava/lang/String;"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
+    IFEQ L6
     ICONST_3
     IRETURN
    L4
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 net/sf/cglib/core/Signature] [java/lang/String]
-    POP
+    LDC "hashCode()I"
+    INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
+    IFEQ L6
+    ICONST_4
+    IRETURN
    L5
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 net/sf/cglib/core/Signature] [java/lang/String]
+    POP
+   L6
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 net/sf/cglib/core/Signature] []
     ICONST_M1
     IRETURN
@@ -73,38 +81,39 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
     LOOKUPSWITCH
       -1776922004: L0
       -1295482945: L1
-      147696667: L2
-      2119297055: L3
-      default: L4
+      -1203529724: L2
+      147696667: L3
+      2119297055: L4
+      default: L5
    L0
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class; java/lang/String]
     LDC "toString"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
+    IFEQ L6
     DUP
     ARRAYLENGTH
     TABLESWITCH
-      0: L6
-      default: L7
-   L6
-   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
-    POP
-    ICONST_2
-    IRETURN
+      0: L7
+      default: L8
    L7
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
-    GOTO L8
+    POP
+    ICONST_3
+    IRETURN
+   L8
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
+    GOTO L9
    L1
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class; java/lang/String]
     LDC "equals"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
+    IFEQ L6
     DUP
     ARRAYLENGTH
     TABLESWITCH
-      1: L9
-      default: L10
-   L9
+      1: L10
+      default: L11
+   L10
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
     DUP
     ICONST_0
@@ -112,56 +121,74 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
     INVOKEVIRTUAL java/lang/Class.getName ()Ljava/lang/String;
     LDC "java.lang.Object"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L8
+    IFEQ L9
     POP
-    ICONST_1
+    ICONST_2
     IRETURN
-   L10
-   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
-    GOTO L8
-   L2
-   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class; java/lang/String]
-    LDC "hashCode"
-    INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
-    DUP
-    ARRAYLENGTH
-    TABLESWITCH
-      0: L11
-      default: L12
    L11
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
-    POP
-    ICONST_3
-    IRETURN
-   L12
-   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
-    GOTO L8
-   L3
+    GOTO L9
+   L2
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class; java/lang/String]
-    LDC "realMethod"
+    LDC "testFinal"
     INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
-    IFEQ L5
+    IFEQ L6
     DUP
     ARRAYLENGTH
     TABLESWITCH
-      0: L13
-      default: L14
-   L13
+      0: L12
+      default: L13
+   L12
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
     POP
     ICONST_0
     IRETURN
+   L13
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
+    GOTO L9
+   L3
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class; java/lang/String]
+    LDC "hashCode"
+    INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
+    IFEQ L6
+    DUP
+    ARRAYLENGTH
+    TABLESWITCH
+      0: L14
+      default: L15
    L14
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
-    GOTO L8
+    POP
+    ICONST_4
+    IRETURN
+   L15
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
+    GOTO L9
    L4
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class; java/lang/String]
-    POP
-   L5
+    LDC "realMethod"
+    INVOKEVIRTUAL java/lang/Object.equals (Ljava/lang/Object;)Z
+    IFEQ L6
+    DUP
+    ARRAYLENGTH
+    TABLESWITCH
+      0: L16
+      default: L17
+   L16
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
-    GOTO L8
-   L8
+    POP
+    ICONST_1
+    IRETURN
+   L17
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
+    GOTO L9
+   L5
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class; java/lang/String]
+    POP
+   L6
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
+    GOTO L9
+   L9
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 java/lang/String [Ljava/lang/Class;] [[Ljava/lang/Class;]
     POP
     ICONST_M1
@@ -205,13 +232,19 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
       1: L3
       2: L4
       3: L5
-      default: L6
+      4: L6
+      default: L7
    L2
+   FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [com/github/sources/proxy/cglib/RealService]
+    INVOKEVIRTUAL com/github/sources/proxy/cglib/RealService.testFinal ()V
+    ACONST_NULL
+    ARETURN
+   L3
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [com/github/sources/proxy/cglib/RealService]
     INVOKEVIRTUAL com/github/sources/proxy/cglib/RealService.realMethod ()V
     ACONST_NULL
     ARETURN
-   L3
+   L4
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [com/github/sources/proxy/cglib/RealService]
     ALOAD 3
     ICONST_0
@@ -222,11 +255,11 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
     SWAP
     INVOKESPECIAL java/lang/Boolean.<init> (Z)V
     ARETURN
-   L4
+   L5
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [com/github/sources/proxy/cglib/RealService]
     INVOKEVIRTUAL com/github/sources/proxy/cglib/RealService.toString ()Ljava/lang/String;
     ARETURN
-   L5
+   L6
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [com/github/sources/proxy/cglib/RealService]
     INVOKEVIRTUAL com/github/sources/proxy/cglib/RealService.hashCode ()I
     NEW java/lang/Integer
@@ -234,9 +267,9 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
     SWAP
     INVOKESPECIAL java/lang/Integer.<init> (I)V
     ARETURN
-   L6
+   L7
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [com/github/sources/proxy/cglib/RealService]
-    GOTO L7
+    GOTO L8
    L1
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [java/lang/Throwable]
     NEW java/lang/reflect/InvocationTargetException
@@ -244,7 +277,7 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
     SWAP
     INVOKESPECIAL java/lang/reflect/InvocationTargetException.<init> (Ljava/lang/Throwable;)V
     ATHROW
-   L7
+   L8
    FRAME FULL [com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91b96 I java/lang/Object [Ljava/lang/Object;] [com/github/sources/proxy/cglib/RealService]
     NEW java/lang/IllegalArgumentException
     DUP
@@ -291,7 +324,7 @@ public class com/github/sources/proxy/cglib/RealService$$FastClassByCGLIB$$b5f91
 
   // access flags 0x1
   public getMaxIndex()I
-    ICONST_3
+    ICONST_4
     IRETURN
     MAXSTACK = 1
     MAXLOCALS = 1

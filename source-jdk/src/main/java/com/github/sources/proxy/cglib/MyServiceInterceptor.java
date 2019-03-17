@@ -22,7 +22,9 @@ public class MyServiceInterceptor implements MethodInterceptor {
     @Override
     public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
         System.out.println("before exexute");
-        Object result=proxy.invokeSuper(obj, args);
+        Object result = null;
+//        result = proxy.invokeSuper(obj, args);
+        result = proxy.invoke(obj, args);
         System.out.println("after exexute");
         return result;
     }
