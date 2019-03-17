@@ -1,4 +1,4 @@
-package com.github.sources.jdk8;
+package com.github.sources.jdk8.lambda;
 
 
 /**
