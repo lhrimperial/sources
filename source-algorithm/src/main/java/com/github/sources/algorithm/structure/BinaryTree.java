@@ -1,4 +1,4 @@
-package com.github.sources.algorithm;
+package com.github.sources.algorithm.structure;
 
 /**
  * 二叉排序树

@@ -1,4 +1,4 @@
-package com.github.sources.algorithm;
+package com.github.sources.algorithm.sort;
 
 import java.util.Arrays;
 
