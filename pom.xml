@@ -23,6 +23,7 @@
       <module>source-docker</module>
       <module>source-aall</module>
       <module>source-pylon</module>
+      <module>source-ddddemo</module>
   </modules>
   <packaging>pom</packaging>
 

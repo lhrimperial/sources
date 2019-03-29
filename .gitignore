@@ -44,3 +44,4 @@ webapps/docs/jdbc-pool.xml
 out
 gen
 target
+.DS_Store
