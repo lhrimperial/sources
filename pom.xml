@@ -24,6 +24,8 @@
       <module>source-aall</module>
       <module>source-pylon</module>
       <module>source-ddddemo</module>
+      <module>source-rabbitmq</module>
+      <module>source-rabbitmq</module>
   </modules>
   <packaging>pom</packaging>
 
