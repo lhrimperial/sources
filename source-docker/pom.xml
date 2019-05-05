@@ -29,5 +29,7 @@
     </build>
     <modules>
         <module>source-docker-sboot</module>
+        <module>source-docker-compose</module>
+        <module>source-docker-fabric8io</module>
     </modules>
 </project>

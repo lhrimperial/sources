@@ -80,10 +80,12 @@
                     <imageTags>
                         <imageTag>latest</imageTag>
                     </imageTags>
+                    <!--强制docker覆盖每个新构建的图像标记-->
+                    <forceTags>true</forceTags>
                     <!-- 指定 Dockerfile 路径-->
                     <dockerDirectory>${project.basedir}/src/main/docker</dockerDirectory>
                     <!--指定远程 docker api地址-->
-                    <dockerHost>http://192.168.142.130:2375</dockerHost>
+                    <dockerHost>http://ifarmshop.com:2375</dockerHost>
                     <resources>
                         <resource>
                             <targetPath>/</targetPath>
