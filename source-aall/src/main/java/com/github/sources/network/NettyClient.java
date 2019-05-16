@@ -8,9 +8,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 
-/**
- *
- **/
+/** */
 public class NettyClient {
 
     public static void main(String[] args) {
@@ -21,23 +19,28 @@ public class NettyClient {
         EventLoopGroup group = new NioEventLoopGroup();
 
         try {
-            Bootstrap client = new Bootstrap().group(group).channel(NioSocketChannel.class)
-                    .option(ChannelOption.TCP_NODELAY, true)
-                    .handler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline()
-                                    .addLast("decode", new StringDecoder())
-                                    .addLast("encode", new StringEncoder())
-                                    .addLast(new ClientHandler());
-                        }
-                    });
-            ChannelFuture future = client.connect(host,port).sync();
+            Bootstrap client =
+                    new Bootstrap()
+                            .group(group)
+                            .channel(NioSocketChannel.class)
+                            .option(ChannelOption.TCP_NODELAY, true)
+                            .handler(
+                                    new ChannelInitializer<SocketChannel>() {
+                                        @Override
+                                        protected void initChannel(SocketChannel ch)
+                                                throws Exception {
+                                            ch.pipeline()
+                                                    .addLast("decode", new StringDecoder())
+                                                    .addLast("encode", new StringEncoder())
+                                                    .addLast(new ClientHandler());
+                                        }
+                                    });
+            ChannelFuture future = client.connect(host, port).sync();
             future.channel().writeAndFlush("Hello Netty Server ,I am a netty client");
             future.channel().closeFuture().sync();
         } catch (InterruptedException e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             group.shutdownGracefully();
         }
     }
@@ -49,8 +52,7 @@ public class NettyClient {
 
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            System.out.println("NettyClient read Message:"+msg);
+            System.out.println("NettyClient read Message:" + msg);
         }
     }
-
 }

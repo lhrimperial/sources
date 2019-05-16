@@ -8,9 +8,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 import java.util.Iterator;
 
-/**
- *
- **/
+/** */
 public class NIOClient {
 
     public static final int port = 8080;
@@ -18,15 +16,17 @@ public class NIOClient {
     private Selector selector;
 
     public static void main(String[] args) {
-        for (int i = 0;i < 3;i++) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    NIOClient client = new NIOClient();
-                    client.connect(host, port);
-                    client.listen();
-                }
-            }).start();
+        for (int i = 0; i < 3; i++) {
+            new Thread(
+                            new Runnable() {
+                                @Override
+                                public void run() {
+                                    NIOClient client = new NIOClient();
+                                    client.connect(host, port);
+                                    client.listen();
+                                }
+                            })
+                    .start();
         }
     }
 
@@ -59,13 +59,16 @@ public class NIOClient {
 
                             socketChannel.configureBlocking(false);
                             socketChannel.register(selector, SelectionKey.OP_READ);
-                            socketChannel.write(ByteBuffer.wrap(("你好 this is " + Thread.currentThread().getName()).getBytes()));
+                            socketChannel.write(
+                                    ByteBuffer.wrap(
+                                            ("你好 this is " + Thread.currentThread().getName())
+                                                    .getBytes()));
                         } else if (key.isReadable()) {
                             SocketChannel sc = (SocketChannel) key.channel();
                             ByteBuffer buffer = ByteBuffer.allocate(1024);
                             sc.read(buffer);
                             buffer.flip();
-                            System.out.println("收到服务端数据："+new String(buffer.array()));
+                            System.out.println("收到服务端数据：" + new String(buffer.array()));
                         }
                     }
                 }
@@ -73,8 +76,5 @@ public class NIOClient {
                 e.printStackTrace();
             }
         }
-
     }
-
-
 }

@@ -1,8 +1,6 @@
 package com.github.sources.structure;
 
-/**
- *
- **/
+/** */
 public class BinTreeNode {
 
     private Node root;
@@ -10,18 +8,18 @@ public class BinTreeNode {
     public static void main(String[] args) {
         int[] arr = {8, 5, 2, 1, 3, 4, 6, 7, 9};
         BinTreeNode tree = new BinTreeNode();
-        for (int i = 0,len = arr.length; i < len; i++) {
+        for (int i = 0, len = arr.length; i < len; i++) {
             tree.insert(arr[i]);
         }
         System.out.println("前序遍历：");
         tree.preTraverse(tree.root);
-        System.out.println("");
+        System.out.println();
         System.out.println("中序遍历：");
         tree.midTraverse(tree.root);
-        System.out.println("");
+        System.out.println();
         System.out.println("后序遍历：");
         tree.postTraverse(tree.root);
-        System.out.println("");
+        System.out.println();
 
         System.out.println(hasPathSum(tree.root, 15));
 
@@ -41,16 +39,16 @@ public class BinTreeNode {
     }
 
     public static boolean hasPathSum(Node root, int sum) {
-        if(root == null){
+        if (root == null) {
             return false;
         }
-        if(root.left == null && root.right == null && sum - root.value == 0){
+        if (root.left == null && root.right == null && sum - root.value == 0) {
             return true;
         }
         return hasPathSum(root.left, sum - root.value) || hasPathSum(root.right, sum - root.value);
     }
 
-    //后序遍历
+    /** 后序遍历 */
     public void postTraverse(Node node) {
         if (node != null) {
             postTraverse(node.left);
@@ -59,7 +57,11 @@ public class BinTreeNode {
         }
     }
 
-    //中序遍历
+    /**
+     * 中序遍历
+     *
+     * @param node
+     */
     public void midTraverse(Node node) {
         if (node != null) {
             midTraverse(node.left);
@@ -68,7 +70,11 @@ public class BinTreeNode {
         }
     }
 
-    //前序遍历
+    /**
+     * 前序遍历
+     *
+     * @param node
+     */
     public void preTraverse(Node node) {
         if (node != null) {
             System.out.print(node.value + " ");

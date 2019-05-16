@@ -11,9 +11,7 @@ import java.util.Iterator;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- *
- **/
+/** */
 public class NIOServer {
 
     private int port;
@@ -68,9 +66,7 @@ public class NIOServer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
-
 
     public static class ServerHandler implements Runnable {
         private SelectionKey selectionKey;
@@ -87,10 +83,14 @@ public class NIOServer {
                 try {
                     channel.read(buffer);
                     buffer.flip();
-                    System.out.println("收到客户端"+channel.socket().getInetAddress().getHostName()+"的数据："+new String(buffer.array()));
-                    //将数据添加到key中
+                    System.out.println(
+                            "收到客户端"
+                                    + channel.socket().getInetAddress().getHostName()
+                                    + "的数据："
+                                    + new String(buffer.array()));
+                    // 将数据添加到key中
                     ByteBuffer outBuffer = ByteBuffer.wrap(buffer.array());
-                    channel.write(outBuffer);// 将消息回送给客户端
+                    channel.write(outBuffer); // 将消息回送给客户端
                     selectionKey.cancel();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -99,4 +99,3 @@ public class NIOServer {
         }
     }
 }
-

@@ -1,8 +1,6 @@
 package com.github.sources.algorithm;
 
-/**
- *
- **/
+/** */
 public class ReciprocalNumberKOfLink {
 
     static class ListNode {
@@ -15,24 +13,26 @@ public class ReciprocalNumberKOfLink {
     }
 
     public static ListNode findKthToTail(ListNode listHead, int k) {
-        //参数校验(判断链表是否存在、k是否大于0)
-        if(listHead == null || k <= 0){
+        // 参数校验(判断链表是否存在、k是否大于0)
+        if (listHead == null || k <= 0) {
             return null;
         }
+        // 前面的指针
+        ListNode ahead = listHead;
 
-        ListNode ahead = listHead;          //前面的指针
-
-        //先让ahead向前走k-1步
-        for(int i = 1; i <= k-1; i++){
-            if(ahead.next != null){
+        // 先让ahead向前走k-1步
+        for (int i = 1; i <= k - 1; i++) {
+            if (ahead.next != null) {
                 ahead = ahead.next;
-            }else{                          //当链表的长度小于k时，则返回null
+            } else {
+                // 当链表的长度小于k时，则返回null
                 return null;
             }
         }
-        ListNode behind = listHead;         //后面的指针
+        // 后面的指针
+        ListNode behind = listHead;
 
-        while(ahead.next != null){
+        while (ahead.next != null) {
             ahead = ahead.next;
             behind = behind.next;
         }
@@ -49,18 +49,18 @@ public class ReciprocalNumberKOfLink {
         ListNode temp5 = new ListNode(6);
         ListNode temp6 = new ListNode(7);
 
-        head.next=temp1;
-        temp1.next=temp2;
-        temp2.next=temp3;
-        temp3.next=temp4;
-        temp4.next=temp5;
-        temp5.next=temp6;
-        temp6.next=null;
+        head.next = temp1;
+        temp1.next = temp2;
+        temp2.next = temp3;
+        temp3.next = temp4;
+        temp4.next = temp5;
+        temp5.next = temp6;
+        temp6.next = null;
 
         ListNode resultNode = findKthToTail(head, 2);
-            if(resultNode != null){
+        if (resultNode != null) {
             System.out.println(resultNode.value);
-        }else{
+        } else {
             System.out.println("您输入的参数有误！");
         }
     }
