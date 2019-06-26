@@ -10,14 +10,12 @@ import io.netty.handler.codec.string.StringEncoder;
 
 import java.net.InetSocketAddress;
 
-/**
- *
- */
+/** */
 public class HelloWorldServer {
 
     private int port;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new HelloWorldServer(8080).start();
     }
 
@@ -34,29 +32,34 @@ public class HelloWorldServer {
         EventLoopGroup work = new NioEventLoopGroup();
         try {
             /**
-             * 实例化一个服务端启动类，
-             * group（）指定线程组
-             * channel（）指定用于接收客户端连接的类，对应java.nio.ServerSocketChannel
+             * 实例化一个服务端启动类， group（）指定线程组 channel（）指定用于接收客户端连接的类，对应java.nio.ServerSocketChannel
              * childHandler（）设置编码解码及处理连接的类
              */
-            ServerBootstrap server = new ServerBootstrap().group(boss, work).channel(NioServerSocketChannel.class)
-                    .localAddress(new InetSocketAddress(port)).option(ChannelOption.SO_BACKLOG, 128).childOption(ChannelOption.SO_KEEPALIVE, true)
-                    .childHandler(new ChannelInitializer<SocketChannel>() {
-                        @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
-                            ch.pipeline()
-                                    .addLast("decoder", new StringDecoder())
-                                    .addLast("encoder", new StringEncoder())
-                                    .addLast(new HelloWorldServerHandler());
-                        }
-                    });
-            //绑定端口
+            ServerBootstrap server =
+                    new ServerBootstrap()
+                            .group(boss, work)
+                            .channel(NioServerSocketChannel.class)
+                            .localAddress(new InetSocketAddress(port))
+                            .option(ChannelOption.SO_BACKLOG, 128)
+                            .childOption(ChannelOption.SO_KEEPALIVE, true)
+                            .childHandler(
+                                    new ChannelInitializer<SocketChannel>() {
+                                        @Override
+                                        protected void initChannel(SocketChannel ch)
+                                                throws Exception {
+                                            ch.pipeline()
+                                                    .addLast("decoder", new StringDecoder())
+                                                    .addLast("encoder", new StringEncoder())
+                                                    .addLast(new HelloWorldServerHandler());
+                                        }
+                                    });
+            // 绑定端口
             ChannelFuture future = server.bind().sync();
             System.out.println("server started and listen " + port);
             future.channel().closeFuture().sync();
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             boss.shutdownGracefully();
             work.shutdownGracefully();
         }
@@ -72,8 +75,8 @@ public class HelloWorldServer {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
             System.out.println("server channelRead..");
-            System.out.println(ctx.channel().remoteAddress()+"->Server :"+ msg.toString());
-            ctx.write("server write"+msg);
+            System.out.println(ctx.channel().remoteAddress() + "->Server :" + msg.toString());
+            ctx.write("server write" + msg);
             ctx.flush();
         }
     }

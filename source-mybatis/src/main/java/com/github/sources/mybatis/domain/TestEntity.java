@@ -1,6 +1,10 @@
 package com.github.sources.mybatis.domain;
 
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  *
@@ -41,5 +45,18 @@ public class TestEntity {
                 ", name='" + name + '\'' +
                 ", date=" + date +
                 '}';
+    }
+    public static void main(String[] args){
+       add(null,"a");
+    }
+
+    public static BigDecimal add(BigDecimal a, String b) {
+        if (Objects.isNull(a)) {
+            a = BigDecimal.ZERO;
+        }
+        if (StringUtils.isEmpty(b)) {
+            return a;
+        }
+        return a.add(new BigDecimal(b.trim()));
     }
 }
