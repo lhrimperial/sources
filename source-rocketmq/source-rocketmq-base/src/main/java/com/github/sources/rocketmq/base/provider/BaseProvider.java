@@ -22,7 +22,7 @@ public class BaseProvider {
              */
 
             DefaultMQProducer producer = new DefaultMQProducer("ProviderGroupName");
-            producer.setNamesrvAddr("192.168.204.128:9876");
+            producer.setNamesrvAddr("www.ifarmshop.com:9876");
             producer.setInstanceName("Producer");
             producer.setVipChannelEnabled(false);
 

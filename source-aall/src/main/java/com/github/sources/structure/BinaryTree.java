@@ -1,12 +1,10 @@
 package com.github.sources.structure;
 
 import com.google.common.collect.Lists;
-import lombok.Builder;
 import lombok.Data;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,24 +24,25 @@ public class BinaryTree {
         for (int i = 0, len = arr.length; i < len; i++) {
             insert(arr[i]);
         }
-        /*System.out.println("前序遍历：");
-        perOrderTraverse(root);
-        System.out.println("\n中序遍历：");
-        middleOrderTraverse(root);
-        System.out.println("\n后序遍历：");
-        postOrderTraverse(root);
-        System.out.println("\n二叉树深度：" + treeDepth(root));
-        System.out.println("\n是否是平衡二叉树：" + isBalanced(root));
-        System.out.println("\n是否是平衡二叉树V2：" + isBalancedV2(root));
-        System.out.println("\n最短深度：" + minDepth(root));
-        System.out.println("\n是否存在某一整数路径：" + hasPathSum(root, 14));
-        System.out.println("\n打印树图：\n");
-        printNode(Collections.singletonList(root), 1, treeDepth(root));*/
 
-        int[] perorder = {5, 2, 1, 3, 4, 8, 6, 7, 9};
-        int[] inorder = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-        TreeNode node = buildTree(perorder, inorder);
-        printNode(Collections.singletonList(node),1,treeDepth(node));
+        System.out.println("前序遍历：");
+        perOrderTraverse(root);
+        System.out.println("\n是否存在某一整数路径：" + hasPathSum(root, 14));
+        //        System.out.println("\n中序遍历：");
+        //        middleOrderTraverse(root);
+        //        System.out.println("\n后序遍历：");
+        //        postOrderTraverse(root);
+        //        System.out.println("\n二叉树深度：" + treeDepth(root));
+        //        System.out.println("\n是否是平衡二叉树：" + isBalanced(root));
+        //        System.out.println("\n是否是平衡二叉树V2：" + isBalancedV2(root));
+        //        System.out.println("\n最短深度：" + minDepth(root));
+        //        System.out.println("\n打印树图：\n");
+        //        printNode(Collections.singletonList(root), 1, treeDepth(root));
+
+        //        int[] perorder = {5, 2, 1, 3, 4, 8, 6, 7, 9};
+        //        int[] inorder = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+        //        TreeNode node = buildTree(perorder, inorder);
+        //        printNode(Collections.singletonList(node),1,treeDepth(node));
     }
 
     private TreeNode root = null;
@@ -200,11 +199,11 @@ public class BinaryTree {
      * @return
      */
     public boolean hasPathSum(TreeNode root, int sum) {
-        if (root == null) {
+        if (Objects.isNull(root)) {
             return false;
         }
         sum -= root.getData();
-        if (sum == 0 && root.getLeftNode() == null && root.getRightNode() == null) {
+        if (sum == 0 && Objects.isNull(root.getLeftNode()) && Objects.isNull(root.getRightNode())) {
             return true;
         }
 
