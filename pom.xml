@@ -26,6 +26,7 @@
       <module>source-ddddemo</module>
       <module>source-rabbitmq</module>
       <module>source-rabbitmq</module>
+      <module>source-script</module>
   </modules>
   <packaging>pom</packaging>
 

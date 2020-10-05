@@ -9,7 +9,7 @@ public class SimpleSerialize {
 
     public static void main(String[] args) throws Exception{
         //序列化
-        FileOutputStream fos = new FileOutputStream("source-dubbo\\source-dubbo-base\\object.out");
+        FileOutputStream fos = new FileOutputStream("source-dubbo/source-dubbo-base/object.out");
         ObjectOutputStream oos = new ObjectOutputStream(fos);
         User user = new User("andy", "123", "male");
         Person person = new Person("andy", "123", "male");
@@ -19,7 +19,7 @@ public class SimpleSerialize {
         oos.close();
 
         //反序列化
-        FileInputStream fis = new FileInputStream("source-dubbo\\source-dubbo-base\\object.out");
+        FileInputStream fis = new FileInputStream("source-dubbo/source-dubbo-base/object.out");
         ObjectInputStream ois = new ObjectInputStream(fis);
         User user2 = (User) ois.readObject();
         System.out.println(user2);

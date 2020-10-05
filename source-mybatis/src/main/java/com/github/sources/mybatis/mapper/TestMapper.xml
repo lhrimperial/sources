@@ -6,6 +6,10 @@
         <result property="name" column="name"/>
         <result property="date" column="date"/>
     </resultMap>
-    <sql id="testSql">select * from test_entity<where>id=#{value}</where></sql>
-    <select id="getById" resultType="com.github.sources.mybatis.domain.TestEntity" parameterType="long"><include refid="testSql"/></select>
+    <sql id="testSql">select * from test_entity
+        <where>id=#{value}</where>
+    </sql>
+    <select id="getById" resultType="com.github.sources.mybatis.domain.TestEntity" parameterType="long">
+        <include refid="testSql"/>
+    </select>
 </mapper>
